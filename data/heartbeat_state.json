@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-10-14T17:10:25.855Z",
+  "uptimeSeconds": 0,
+  "tier": "NORMAL",
+  "tokenCreditUnits": 150,
+  "subsidiariesStatus": [
+    {
+      "name": "Antiface",
+      "path": "C:\\Users\\Admin\\Documents\\Bravinall\\repos\\Antiface",
+      "accessible": true
+    },
+    {
+      "name": "Bravin",
+      "path": "C:\\Users\\Admin\\Documents\\Bravinall\\repos\\Bravin",
+      "accessible": true
+    },
+    {
+      "name": "Bravinall",
+      "path": "C:\\Users\\Admin\\Documents\\Bravinall\\repos\\Bravinall",
+      "accessible": true
+    },
+    {
+      "name": "micron",
+      "path": "C:\\Users\\Admin\\Documents\\Bravinall\\repos\\micron",
+      "accessible": true
+    }
+  ],
+  "notes": [
+    "Hệ thống ổn định ở trạng thái [NORMAL]. Đang điều phối hệ sinh thái Bravinall."
+  ]
+}

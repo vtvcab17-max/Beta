@@ -1,0 +1,56 @@
+[
+  {
+    "name": "velocut",
+    "fullName": "open-ribbi/velocut",
+    "url": "https://github.com/open-ribbi/velocut",
+    "description": "AI-native, local-first video editor by Ribbi — runs entirely in the browser. Rust/WASM engine, WebGPU compositing, WebCodecs export; humans and LLM agents edit through the same JSON command protocol.",
+    "stars": 456,
+    "license": "MIT",
+    "category": "VIDEO_ENGINE"
+  },
+  {
+    "name": "WebCut",
+    "fullName": "wangrongding/WebCut",
+    "url": "https://github.com/wangrongding/WebCut",
+    "description": "🎬 基于 web 端的音视频编辑器。(A web-based audio and video editor.)",
+    "stars": 207,
+    "license": "LGPL-3.0",
+    "category": "VIDEO_ENGINE"
+  },
+  {
+    "name": "wasplay",
+    "fullName": "emdiple/wasplay",
+    "url": "https://github.com/emdiple/wasplay",
+    "description": "Browser-based video editor built on Rust/WebAssembly — no server-side transcoding, no uploads. Import, arrange, cut, and analyze media entirely client-side.",
+    "stars": 4,
+    "license": "MIT",
+    "category": "VIDEO_ENGINE"
+  },
+  {
+    "name": "ReactFlow-Pipeline-Editor",
+    "fullName": "Kyr8/ReactFlow-Pipeline-Editor",
+    "url": "https://github.com/Kyr8/ReactFlow-Pipeline-Editor",
+    "description": "A lightweight node-based workflow canvas for building and validating connected pipelines with dynamic inputs and graph analysis.",
+    "stars": 0,
+    "license": "Unspecified",
+    "category": "AI_CANVAS"
+  },
+  {
+    "name": "Product-Flow-Editor",
+    "fullName": "Harsh-141cmd/Product-Flow-Editor",
+    "url": "https://github.com/Harsh-141cmd/Product-Flow-Editor",
+    "description": "A React-based web app that fetches products from an API and lets users visually map them as draggable, connectable nodes on a canvas. Features include adding product nodes, connecting them with arrows, creating and editing empty nodes, and deleting selected nodes — all with a clean and intuitive UI using React Flow.",
+    "stars": 0,
+    "license": "Unspecified",
+    "category": "AI_CANVAS"
+  },
+  {
+    "name": "reactflow-nodes-pipeline",
+    "fullName": "BinMansoor11/reactflow-nodes-pipeline",
+    "url": "https://github.com/BinMansoor11/reactflow-nodes-pipeline",
+    "description": "A node-based visual pipeline editor — drag nodes onto a canvas, wire them together, and submit the graph for validation. React + React Flow on the front, FastAPI on the back.",
+    "stars": 0,
+    "license": "Unspecified",
+    "category": "AI_CANVAS"
+  }
+]

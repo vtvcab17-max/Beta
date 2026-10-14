@@ -1,0 +1,79 @@
+schema: paperclip/v1
+company:
+  name: Beta Holding
+  slug: beta
+  subsidiaries:
+    - path: ../../bravinall-company
+      name: Bravinall
+
+agents:
+  supreme-orchestrator:
+    title: Tổng chỉ huy hệ thống Beta
+    description: Điều phối cấp cao nhất, giám sát các công ty con và đảm bảo nhịp tim của toàn bộ hệ sinh thái.
+    adapter:
+      type: gemini_local
+      config:
+        model: auto
+    permissions:
+      canCreateAgents: true
+      canDelegateToSubsidiaries: true
+
+  survival-monitor:
+    title: Tác tử giám sát sinh tồn & Token
+    description: Quản lý ngân sách token LLM, đo lường chi phí, kích hoạt fallback sang free model khi thiếu tài nguyên để Beta không bao giờ chết.
+    adapter:
+      type: gemini_local
+      config:
+        model: auto
+
+  repo-scout:
+    title: Tác tử săn tìm & Khai thác GitHub Repo
+    description: Tự động tìm kiếm các open-source repository cần thiết để phục vụ hệ sinh thái (video effects, AI processing, UI canvas, payment tools).
+    adapter:
+      type: gemini_local
+      config:
+        model: auto
+
+  cashflow-auditor:
+    title: Kiểm toán viên dòng tiền & PayPal
+    description: Giám sát doanh thu từ các kênh bán hàng Bravinall, đối soát giao dịch PayPal và bảo vệ quyền sở hữu của Phạm Việt Hà.
+    adapter:
+      type: gemini_local
+      config:
+        model: auto
+
+routines:
+  heartbeat-survival-check:
+    description: Nhịp tim kiểm tra sự sống, tài nguyên token và tình trạng tiến trình
+    triggers:
+      - kind: schedule
+        cronExpression: "*/30 * * * *"
+        timezone: Asia/Ho_Chi_Minh
+
+  github-repo-scouting:
+    description: Quét tìm các repo công nghệ hữu ích mới trên GitHub
+    triggers:
+      - kind: schedule
+        cronExpression: "0 6 * * *"
+        timezone: Asia/Ho_Chi_Minh
+
+  financial-reconciliation:
+    description: Tổng kết doanh thu tiền mặt PayPal và mức tiêu thụ token
+    triggers:
+      - kind: schedule
+        cronExpression: "0 21 * * 0"
+        timezone: Asia/Ho_Chi_Minh
+
+tasks:
+  thiet-lap-nhip-tim-sinh-ton:
+    priority: urgent
+    assignedTo: survival-monitor
+  tim-kiem-repo-ai-video-moi:
+    priority: high
+    assignedTo: repo-scout
+  tich-hop-cong-thanh-toan-paypal:
+    priority: high
+    assignedTo: cashflow-auditor
+  dieu-phoi-muc-tieu-bravinall:
+    priority: high
+    assignedTo: supreme-orchestrator

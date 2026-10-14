@@ -1,0 +1,29 @@
+{
+  "name": "beta-holding",
+  "version": "1.0.0",
+  "description": "Supreme AI Orchestration and Autonomous Survival Engine for Bravinall Ecosystem",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "heartbeat": "tsx src/survival/heartbeat.ts",
+    "scout": "tsx src/tools/github-scout.ts",
+    "paypal-check": "tsx src/finance/paypal-bridge.ts",
+    "start": "tsx src/index.ts"
+  },
+  "keywords": [
+    "autonomous-agent",
+    "survival-engine",
+    "paperclip",
+    "automaton",
+    "bravinall",
+    "beta"
+  ],
+  "author": "Phạm Việt Hà <vtvcab17@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
