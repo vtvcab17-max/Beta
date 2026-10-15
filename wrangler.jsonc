@@ -1,7 +1,7 @@
 {
   "name": "beta-hq",
   "compatibility_date": "2025-10-01",
-  "assets": {
-    "directory": "./"
-  }
+  // Chỉ đưa lên đúng các tệp của trang: chép vào dist/ trước mỗi lần deploy.
+  "build": { "command": "rm -rf dist && mkdir -p dist && cp -r index.html assets du-lieu dist/" },
+  "assets": { "directory": "./dist" }
 }
