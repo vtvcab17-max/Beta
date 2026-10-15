@@ -119,6 +119,25 @@ a{color:var(--primary)}
 .nums dd{margin:2px 0 0;font:500 16px/24px var(--font);font-variant-numeric:tabular-nums}
 .spark{width:100%;height:36px;display:block}
 .spark polyline{stroke:var(--primary)}
+/* Beta Holding */
+.bh{display:grid;gap:12px}
+.bh .top{display:flex;flex-wrap:wrap;gap:8px}
+.bh .top .chipi b{font-weight:600}
+.bh .hb.ok{background:var(--ok-cont);color:var(--ok);border-color:transparent}
+.bh .hb.stale{background:var(--warn-cont);color:var(--warn);border-color:transparent}
+.bh h3{margin:4px 4px 0;font:500 14px/20px var(--font);color:var(--on-surface-var)}
+.pc{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:start;background:var(--s-lowest);border-radius:16px;padding:10px 12px}
+.pc svg{width:36px;height:36px;padding:5px;border-radius:50%;background:var(--primary-container)}
+.pc b{font:500 14px/20px var(--font);display:block}
+.pc span{display:block;font-size:13px;line-height:18px;color:var(--on-surface-var)}
+.pc span.now{color:var(--on-surface)}
+.bh ul{margin:0;padding:0;list-style:none;display:grid;gap:2px}
+.bh li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:6px 8px;border-radius:10px;font-size:13px;line-height:18px}
+.bh li:hover{background:var(--s-high)}
+.bh li a{color:inherit;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bh li a:hover{text-decoration:underline}
+.bh li small{color:var(--on-surface-var);font:500 12px/18px var(--font);white-space:nowrap}
+.bh .rt li{grid-template-columns:minmax(0,1fr) auto}
 /* nhật ký */
 .log{display:grid;gap:2px;max-height:520px;overflow:auto}
 .ev{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px;border-radius:12px;font-size:14px;line-height:20px}
@@ -168,12 +187,13 @@ a{color:var(--primary)}
       <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">hub</span>Tác nhân khác: commit có dòng <code>Agent: Tên</code></span><span><span class="ms">elevator</span>Repo mới thành phòng ở tầng 2</span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
     </section>
     <div class="stack">
+      <section class="card"><h2>Beta Holding đang làm gì <span id="bhSnap">–</span></h2><div class="bh" id="bh"><p class="empty">Đang đọc trạng thái Beta Holding…</p></div></section>
       <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
       <section class="card"><h2>Hoạt động <span>GitHub · 60 giây/lần</span></h2><div class="log" id="log"><p class="empty">Đang tải sự kiện…</p></div></section>
     </div>
   </div>
 
-  <p class="note"><b>Số liệu ở đây là thật.</b> Hoạt động code lấy trực tiếp từ GitHub (repo công khai của Beta), trình duyệt của bạn tự hỏi lại mỗi 60 giây. Token và việc của từng tác nhân AI lấy từ ảnh chụp các phiên Claude (<code>du-lieu/trang-thai.json</code>), cập nhật mỗi khi có tác nhân chạy <code>cap-nhat.py</code>; trang tự đọc lại tệp này mỗi phút. Commit có dòng <code>Claude-Session</code> sẽ được gắn đúng cho tác nhân đã viết nó.</p>
+  <p class="note"><b>Số liệu ở đây là thật.</b> Hoạt động code lấy trực tiếp từ GitHub (repo công khai của Beta), trình duyệt của bạn tự hỏi lại mỗi 60 giây. Token và việc của từng tác nhân AI lấy từ ảnh chụp các phiên Claude (<code>du-lieu/trang-thai.json</code>), cập nhật mỗi khi có tác nhân chạy <code>cap-nhat.py</code>; trang tự đọc lại tệp này mỗi phút. Commit có dòng <code>Claude-Session</code> sẽ được gắn đúng cho tác nhân đã viết nó. Khung <b>Beta Holding</b> đọc thẳng tệp trạng thái do hệ thống Paperclip ghi vào repo <code>beta-holding</code> (<code>.paperclip.yaml</code>, <code>data/heartbeat_state.json</code>, <code>data/active_bounties.json</code>, <code>data/scouted_repos.json</code>), 90 giây/lần, không tính vào hạn mức GitHub.</p>
 </main>
 
 <script src="assets/tru-so.js"></script>
@@ -352,6 +372,134 @@ async function loadAgents() {
   catch (e) { $("snap").textContent = "chưa đọc được ảnh chụp"; }
 }
 
+
+// ---------- Beta Holding: đọc tệp trạng thái Paperclip (raw.githubusercontent, không tính hạn mức API) ----------
+const BH_RAW = `https://raw.githubusercontent.com/${OWNER}/beta-holding/main/`;
+const BH_ROOM = "r:beta-holding";
+// nhãn ngắn trên bản đồ; tác tử chỉ huy và kiểm toán ở sảnh tầng 2, các tác tử còn lại ngồi trong phòng Beta Holding
+const BH_SHORT = { "supreme-orchestrator": ["Chỉ huy", "#6750a4"], "survival-monitor": ["Sinh tồn", "#34a853"], "repo-scout": ["Săn repo", "#12b5cb"], "cashflow-auditor": ["Kiểm toán", "#fbbc04"], "bounty-hunter": ["Săn thưởng", "#ea4335"] };
+function parsePaperclip(txt) {
+  // đọc phần agents và routines của .paperclip.yaml (đủ cho cấu trúc 2 cấp thụt lề, không cần thư viện YAML)
+  const out = { agents: [], routines: [] }; let sec = null, cur = null;
+  const val = v => v.trim().replace(/^["']|["']$/g, "");
+  for (const line of txt.split(/\r?\n/)) {
+    if (/^\S/.test(line)) { sec = line.replace(/:.*/, "").trim(); cur = null; continue; }
+    let m;
+    if ((m = /^  ([\w-]+):\s*$/.exec(line))) { cur = { id: m[1] }; if (sec === "agents") out.agents.push(cur); else if (sec === "routines") out.routines.push(cur); else cur = null; continue; }
+    if (!cur) continue;
+    if ((m = /^    (title|description):\s*(.+)$/.exec(line))) cur[m[1]] = val(m[2]);
+    else if ((m = /^\s+cronExpression:\s*(.+)$/.exec(line))) cur.cron = val(m[1]);
+  }
+  return out;
+}
+// lịch cron (giờ Việt Nam, UTC+7 không đổi giờ): lần chạy kế tiếp
+function cronNext(expr) {
+  const f = (expr || "").split(/\s+/); if (f.length < 5) return null;
+  const ok = (spec, v) => spec === "*" || spec.split(",").some(p => { const st = /^\*\/(\d+)$/.exec(p); return st ? v % +st[1] === 0 : +p === v; });
+  let t = new Date(Math.floor(Date.now() / 60000) * 60000 + 60000);
+  for (let i = 0; i < 11000; i++, t = new Date(+t + 60000)) {
+    const v = new Date(+t + 7 * 3600e3); // đọc các trường theo giờ Hà Nội
+    if (ok(f[0], v.getUTCMinutes()) && ok(f[1], v.getUTCHours()) && ok(f[2], v.getUTCDate()) && ok(f[3], v.getUTCMonth() + 1) && ok(f[4], v.getUTCDay())) return t;
+  }
+  return null;
+}
+function cronText(expr) {
+  const [mi, h, , , dw] = (expr || "").split(/\s+/), DOW = ["Chủ nhật", "thứ Hai", "thứ Ba", "thứ Tư", "thứ Năm", "thứ Sáu", "thứ Bảy"];
+  if (/^\*\/\d+$/.test(mi) && h === "*") return mi.slice(2) + " phút/lần";
+  if (/^\*\/\d+$/.test(h)) return h.slice(2) + " giờ/lần";
+  if (/^\d+$/.test(h)) { const at = h.padStart(2, "0") + ":" + String(mi).padStart(2, "0"); return dw && dw !== "*" ? at + " " + (DOW[+dw] || "") + " hằng tuần" : at + " hằng ngày"; }
+  return expr;
+}
+const hhmm = d => d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Ho_Chi_Minh" });
+const upTxt = s => s >= 86400 ? Math.floor(s / 86400) + " ngày " + Math.floor(s % 86400 / 3600) + " giờ" : Math.floor(s / 3600) + " giờ " + Math.floor(s % 3600 / 60) + " phút";
+async function rawJson(path, text) {
+  try { const r = await fetch(BH_RAW + path + "?t=" + Math.floor(Date.now() / 60000), { cache: "no-store" }); if (!r.ok) return null; return text ? await r.text() : await r.json(); }
+  catch { return null; }
+}
+let bh = store.get("beta-hq-bh", null), bhTalk = 0;
+function bhDoing(d) {
+  // việc hiện tại của từng tác tử, suy từ chính dữ liệu nó ghi ra
+  const hb = d.hb || {}, b = d.bounties || [], sc = d.scouted || [];
+  const best = b.slice().sort((x, y) => (y.suitabilityScore || 0) - (x.suitabilityScore || 0))[0];
+  const star = sc.slice().sort((x, y) => (y.stars || 0) - (x.stars || 0))[0];
+  const subs = (hb.subsidiariesStatus || []).filter(x => x.accessible).map(x => x.name);
+  return {
+    "supreme-orchestrator": (hb.notes && hb.notes[0]) || "Điều phối các công ty con",
+    "survival-monitor": hb.tier ? `Mức ${hb.tier} · còn ${hb.tokenCreditUnits ?? "?"} đơn vị token · chạy ${upTxt(hb.uptimeSeconds || 0)}` : "Chưa có nhịp tim",
+    "repo-scout": sc.length ? `Đã tìm ${sc.length} repo · nổi nhất ${star.name} ★${star.stars}` : "Chưa ghi repo nào",
+    "cashflow-auditor": "Chưa ghi số liệu doanh thu (chưa có tệp dữ liệu)",
+    "bounty-hunter": b.length ? `Đang theo ${b.length} việc treo thưởng · hợp nhất: ${best.title} (${best.suitabilityScore} điểm)` : "Chưa thấy việc treo thưởng",
+    _subs: subs
+  };
+}
+function renderBH(d, fromCache) {
+  const box = $("bh"); box.textContent = "";
+  const hb = d.hb || {}, ts = hb.timestamp ? new Date(hb.timestamp) : null, mins = ts ? (Date.now() - ts) / 60000 : Infinity;
+  const alive = mins <= 75; // nhịp tim chạy 30 phút/lần, trễ quá 2 nhịp coi như máy đang tắt
+  $("bhSnap").textContent = ts ? "nhịp tim " + ago(hb.timestamp) + " trước" : "chưa có nhịp tim";
+  const top = el("div", "top");
+  const chip = (icon, txt, cls) => { const c = el("span", "chipi" + (cls ? " " + cls : "")); c.append(el("span", "ms", icon)); c.insertAdjacentHTML("beforeend", txt); return c; };
+  top.append(chip("favorite", alive ? "Đang chạy" : (ts ? "Máy Paperclip đang tắt" : "Chưa chạy"), "hb " + (alive ? "ok" : "stale")));
+  if (hb.tier) top.append(chip("shield", "Mức <b>" + hb.tier + "</b>"));
+  if (hb.tokenCreditUnits != null) top.append(chip("toll", "Token <b>" + hb.tokenCreditUnits + "</b> đơn vị"));
+  if (hb.uptimeSeconds) top.append(chip("timer", "Chạy <b>" + upTxt(hb.uptimeSeconds) + "</b>"));
+  box.append(top);
+  const doing = bhDoing(d);
+  if (!alive && ts) box.append(el("p", "empty", `Lần cuối Paperclip ghi nhịp tim lúc ${hhmm(ts)} (giờ Hà Nội). Các tác tử đang ngủ; bật lại Paperclip/Automaton trên máy tính thì nhịp tim mới sẽ hiện ở đây.`));
+  // tác tử
+  box.append(el("h3", null, "Tác tử Paperclip (" + d.agents.length + ")"));
+  for (const a of d.agents) {
+    const [short, color] = BH_SHORT[a.id] || [a.id, "#6750a4"];
+    const c = el("div", "pc"); const ic = el("span"); ic.innerHTML = sprite(color, false); c.append(ic.firstChild);
+    const t = el("div"); t.append(el("b", null, a.title || a.id), el("span", "now", "↳ " + (doing[a.id] || a.description || "")));
+    c.append(t); box.append(c);
+  }
+  // lịch chạy
+  if (d.routines.length) {
+    box.append(el("h3", null, "Lịch chạy tự động"));
+    const ul = el("ul", "rt");
+    for (const r of d.routines) { const nx = cronNext(r.cron); const li = el("li"); li.append(el("span", null, r.description || r.id), el("small", null, cronText(r.cron) + (nx ? " · tới " + (nx.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) === new Date().toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) ? "" : (nx - Date.now() < 2 * 864e5 && new Date(+nx - 864e5).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) === new Date().toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) ? "mai " : nx.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", timeZone: "Asia/Ho_Chi_Minh" }) + " ")) + hhmm(nx) : ""))); ul.append(li); }
+    box.append(ul);
+  }
+  const list = (title, items) => {
+    if (!items.length) return; box.append(el("h3", null, title)); const ul = el("ul");
+    for (const [txt, url, meta] of items) { const li = el("li"); const a = el("a", null, txt); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.title = txt; li.append(a, el("small", null, meta)); ul.append(li); }
+    box.append(ul);
+  };
+  list("Việc treo thưởng đang nhắm (" + d.bounties.length + ")", d.bounties.slice().sort((x, y) => (y.suitabilityScore || 0) - (x.suitabilityScore || 0)).slice(0, 4).map(b => [b.title, b.url, (b.repo || "").split("/").pop() + " · " + (b.suitabilityScore || 0) + " điểm"]));
+  list("Repo đã tìm cho hệ sinh thái (" + d.scouted.length + ")", d.scouted.slice().sort((x, y) => (y.stars || 0) - (x.stars || 0)).slice(0, 4).map(r => [r.name + (r.description ? " · " + r.description : ""), r.url, "★" + (r.stars || 0) + (r.license ? " · " + r.license : "")]));
+  if (doing._subs.length) box.append(el("p", "empty", "Công ty con đang giám sát: " + doing._subs.join(", ") + "."));
+  if (fromCache) box.append(el("p", "empty", "Đang hiện dữ liệu lưu lần trước (chưa đọc được GitHub)."));
+  // nhân vật trên bản đồ
+  const room = roomOf(`${OWNER}/beta-holding`, hb.timestamp || null);
+  d.agents.forEach((a, i) => {
+    const [short, color] = BH_SHORT[a.id] || [a.id.slice(0, 10), "#6750a4"], id = "p:" + a.id;
+    const fresh = !actors[id]; const o = actor(id, short, color, false);
+    o.task = doing[a.id] || a.title;
+    const where = a.id === "supreme-orchestrator" || a.id === "cashflow-auditor" || i > 4 ? "san2" : room;
+    if (fresh) HQ.place(id, where);
+    setSleep(id, !alive);
+  });
+}
+async function loadBH() {
+  const [yaml, hb, bounties, scouted] = await Promise.all([rawJson(".paperclip.yaml", true), rawJson("data/heartbeat_state.json"), rawJson("data/active_bounties.json"), rawJson("data/scouted_repos.json")]);
+  if (yaml == null && hb == null) { if (bh) renderBH(bh, true); else { $("bh").textContent = ""; $("bh").append(el("p", "empty", "Chưa đọc được repo beta-holding (repo phải công khai).")); } return; }
+  const pc = yaml ? parsePaperclip(yaml) : { agents: (bh && bh.agents) || [], routines: (bh && bh.routines) || [] };
+  const prevB = bh && bh.bounties ? bh.bounties.length : null, prevT = bh && bh.hb ? bh.hb.timestamp : null;
+  bh = { agents: pc.agents, routines: pc.routines, hb: hb || (bh && bh.hb) || {}, bounties: Array.isArray(bounties) ? bounties : (bh && bh.bounties) || [], scouted: Array.isArray(scouted) ? scouted : (bh && bh.scouted) || [] };
+  // không lưu đường dẫn máy tính cục bộ
+  const safe = JSON.parse(JSON.stringify(bh)); (safe.hb.subsidiariesStatus || []).forEach(x => delete x.path); store.set("beta-hq-bh", safe);
+  renderBH(bh, false);
+  if (prevT && bh.hb.timestamp && bh.hb.timestamp !== prevT) { pulse(BH_ROOM, "nhịp tim mới"); say("p:survival-monitor", "Nhịp tim mới · mức " + bh.hb.tier); }
+  if (prevB != null && bh.bounties.length > prevB) say("p:bounty-hunter", "+" + (bh.bounties.length - prevB) + " việc treo thưởng mới");
+}
+// lần lượt cho từng tác tử Paperclip nói việc đang làm
+setInterval(() => {
+  if (!bh || !bh.agents.length) return;
+  const a = bh.agents[bhTalk++ % bh.agents.length], o = actors["p:" + a.id];
+  if (o && !o.sleep && HQ.floor === 2) say("p:" + a.id, o.task, 6000);
+}, 7000);
+
 // ---------- GitHub: sự kiện thật ----------
 let etag = null, seen = new Set(store.get("beta-hq-seen", [])), firstLoad = true, nextAt = 0, showingCache = false;
 const commitCache = store.get("beta-hq-commits", {});
@@ -477,7 +625,9 @@ setInterval(() => {
 }, 1000);
 
 addEventListener("scroll", () => document.getElementById("bar").classList.toggle("scrolled", scrollY > 4), { passive: true });
+loadBH();
 loadAgents().then(loadRepos).then(poll);
+setInterval(loadBH, 90000);
 setInterval(loadRepos, 15 * 60000);
 setInterval(loadAgents, 60000);
 })();
