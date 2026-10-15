@@ -1,0 +1,69 @@
+{
+ "chup_luc": "2026-10-15T01:04:09+00:00",
+ "tac_nhan": [
+  {
+   "id": "01Dw5tD69VGTwKaeBpM3Nqo4",
+   "ten": "Bravinall: trang chủ Micow + giới thiệu Micow trên trang chủ",
+   "trang_thai": "dang-lam",
+   "model": "claude-opus-5-5",
+   "repos": [
+    "bravinall",
+    "micow",
+    "bravin",
+    "micron",
+    "antiface"
+   ],
+   "phong": "hq",
+   "viec_gan_nhat": "Đang dựng trang Beta HQ: xem các tác nhân AI và token theo thời gian thực.",
+   "bat_dau": "2026-10-14T16:49:54.676103Z",
+   "cap_nhat": "2026-10-15T01:02:39.957947Z",
+   "token": {
+    "vao": 1575,
+    "ra": 204041,
+    "doc_cache": 59900694,
+    "ghi_cache": 487251
+   },
+   "ngu_canh": {
+    "dung": 531204,
+    "toi_da": 1000000
+   },
+   "lich_su": [
+    {
+     "t": "2026-10-15T01:04:09+00:00",
+     "ra": 204041,
+     "vao": 60389520
+    }
+   ]
+  },
+  {
+   "id": "014Cavqq4F7TCRaiSukJTyXA",
+   "ten": "Micow music generation model",
+   "trang_thai": "nghi",
+   "model": "claude-opus-5-5",
+   "repos": [
+    "micow"
+   ],
+   "phong": "micow",
+   "viec_gan_nhat": "Added connection guidance, a local-open button, and 3s auto-reconnect to the Micow web page; user must run npx wrangler deploy.",
+   "bat_dau": "2026-10-14T11:41:16.618244Z",
+   "cap_nhat": "2026-10-14T17:19:15.878695Z",
+   "token": {
+    "vao": 127251,
+    "ra": 609928,
+    "doc_cache": 117259273,
+    "ghi_cache": 977428
+   },
+   "ngu_canh": {
+    "dung": 272573,
+    "toi_da": 1000000
+   },
+   "lich_su": [
+    {
+     "t": "2026-10-15T01:04:09+00:00",
+     "ra": 609928,
+     "vao": 118363952
+    }
+   ]
+  }
+ ]
+}

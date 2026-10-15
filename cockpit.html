@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beta HQ — Trung Tâm Điều Hành AI Thời Gian Thực</title>
+  <meta name="description" content="Trạm giám sát gamified theo thời gian thực của Beta Holding: Quản trị các tác nhân AI, token nhịp tim sinh tồn và hệ sinh thái Bravinall.">
+  <link rel="icon" type="image/svg+xml" href="brand/beta-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Unbounded:wght@600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08090C;
+      --surface: #0F1118;
+      --surface-border: #1E2235;
+      --surface-light: #181C2A;
+      --pulse: #00F5A0;
+      --pulse-glow: rgba(0, 245, 160, 0.35);
+      --indigo: #6366F1;
+      --cyan: #38BDF8;
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --purple: #8B5CF6;
+      --gold: #F2C14E;
+      --text: #F8FAFC;
+      --text-dim: #94A3B8;
+      --text-muted: #64748B;
+      --font-display: 'Unbounded', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(0, 245, 160, 0.05) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* Scanline effect */
+    body::after {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* TOP HUD */
+    header {
+      background: rgba(15, 17, 24, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1E2235, #0F1118);
+      border: 1px solid rgba(0, 245, 160, 0.4);
+      box-shadow: 0 0 16px var(--pulse-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .brand-logo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .brand-title h1 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title h1 span.highlight {
+      color: var(--pulse);
+      text-shadow: 0 0 10px var(--pulse);
+    }
+
+    .brand-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* HUD METRICS */
+    .hud-metrics {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: rgba(0, 245, 160, 0.1);
+      color: var(--pulse);
+      border: 1px solid var(--pulse);
+      box-shadow: 0 0 10px var(--pulse-glow);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--pulse);
+      box-shadow: 0 0 8px var(--pulse);
+      animation: pulseAnim 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    .token-meter-container {
+      width: 140px;
+      height: 8px;
+      background: #181C2A;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--surface-border);
+      margin-top: 3px;
+    }
+
+    .token-meter-fill {
+      height: 100%;
+      width: 78%;
+      background: linear-gradient(90deg, var(--cyan), var(--pulse));
+      border-radius: 4px;
+      box-shadow: 0 0 8px var(--pulse-glow);
+      transition: width 0.4s ease;
+    }
+
+    /* MAIN COCKPIT */
+    .cockpit-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr 340px;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+      .cockpit-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: rgba(15, 17, 24, 0.75);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-content {
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* LEFT: AGENT ROSTER */
+    .agent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .agent-card {
+      background: var(--surface-light);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .agent-card:hover, .agent-card.active {
+      border-color: var(--pulse);
+      transform: translateX(4px);
+      box-shadow: -4px 0 0 var(--pulse), 0 4px 16px rgba(0, 245, 160, 0.1);
+    }
+
+    .agent-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .agent-name {
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-icon {
+      font-size: 16px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .agent-status-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--indigo);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .agent-status-tag.active {
+      background: rgba(0, 245, 160, 0.15);
+      color: var(--pulse);
+    }
+
+    .agent-status-tag.scanning {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+    }
+
+    .agent-task {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+
+    /* CENTER: GAME WORLD CANVAS */
+    .game-viewport {
+      position: relative;
+      background: #06070A;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--surface-border);
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      min-height: 480px;
+      display: block;
+    }
+
+    .game-controls-overlay {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .btn {
+      background: rgba(15, 17, 24, 0.9);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:hover {
+      border-color: var(--pulse);
+      background: var(--surface-light);
+      color: var(--pulse);
+      transform: translateY(-2px);
+      box-shadow: 0 0 16px var(--pulse-glow);
+    }
+
+    .btn-pulse {
+      background: linear-gradient(135deg, rgba(0, 245, 160, 0.2), rgba(99, 102, 241, 0.2));
+      border-color: var(--pulse);
+      color: var(--pulse);
+    }
+
+    /* RIGHT: LIVE TERMINAL EVENT LOG */
+    .terminal-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .log-item {
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 2px solid var(--surface-border);
+      animation: fadeIn 0.3s ease;
+      word-break: break-word;
+    }
+
+    .log-item.heartbeat { border-left-color: var(--pulse); }
+    .log-item.github { border-left-color: var(--cyan); }
+    .log-item.finance { border-left-color: var(--gold); }
+    .log-item.warning { border-left-color: var(--amber); }
+
+    .log-time {
+      color: var(--text-muted);
+      font-size: 9px;
+      margin-bottom: 2px;
+    }
+
+    .log-tag {
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* FOOTER BAR */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--surface-border);
+      padding: 8px 24px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: var(--cyan);
+      text-decoration: none;
+      margin-left: 12px;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HUD -->
+  <header>
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg viewBox="0 0 512 512">
+          <path d="M 170 380 L 170 148 C 170 134 181 124 195 124 C 209 124 220 134 220 148 L 220 380 C 220 394 209 405 195 405 C 181 405 170 394 170 380 Z" fill="#6366F1"/>
+          <path d="M 215 138 C 265 138 318 152 318 198 C 318 244 262 258 215 258" fill="none" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round"/>
+          <path d="M 215 258 C 275 258 335 274 335 328 C 335 382 268 395 215 395" fill="none" stroke="#00F5A0" stroke-width="36" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-title">
+        <h1>BETA <span class="highlight">HOLDING</span> HQ</h1>
+        <p>ZERO-HUMAN AUTONOMOUS CORPORATE ENGINE</p>
+      </div>
+    </div>
+
+    <div class="hud-metrics">
+      <div class="metric-card">
+        <span class="metric-label">Luật Sinh Tồn</span>
+        <div class="status-badge" id="survivalBadge">
+          <span class="status-dot"></span>
+          <span id="survivalTier">TIER: NORMAL</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-label">Token Khả Dụng / Tiêu Thụ</span>
+        <div class="metric-value">
+          <span id="tokenUnits">154,280</span> <span style="font-size:10px;color:var(--pulse);">TKNS</span>
+        </div>
+        <div class="token-meter-container">
+          <div class="token-meter-fill" id="tokenMeter"></div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-label">Dòng Tiền Mặt (PayPal/VND)</span>
+        <div class="metric-value" style="color:var(--gold);">
+          <span id="cashflowTotal">$39.00</span>
+          <span style="font-size:10px;color:var(--text-muted);">(Phạm Việt Hà)</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-label">Hệ Thống Uptime</span>
+        <div class="metric-value" id="uptimeDisplay">00:00:00</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN COCKPIT -->
+  <main class="cockpit-container">
+    
+    <!-- LEFT: AI AGENTS ROSTER -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>👥</span> TÁC NHÂN AI HOẠT ĐỘNG (9)
+        </div>
+        <span style="font-size:10px;color:var(--pulse);">ACTIVE 100%</span>
+      </div>
+      <div class="panel-content">
+        <div class="agent-list" id="agentList">
+          <!-- Dynamic generated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER: GAMIFIED SIMULATION VIEWPORT -->
+    <section class="game-viewport">
+      <canvas id="gameCanvas"></canvas>
+
+      <div class="game-controls-overlay">
+        <div class="action-group">
+          <button class="btn btn-pulse" id="btnPulse">⚡ Gửi Nhịp Tim (Tick)</button>
+          <button class="btn" id="btnScout">🛰️ Quét GitHub Repo</button>
+          <button class="btn" id="btnPaypal">💰 Đơn Hàng PayPal Mới</button>
+        </div>
+
+        <div class="action-group">
+          <button class="btn" id="btnAudioToggle">🔊 Âm Thanh: BẬT</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: LIVE REAL-TIME TERMINAL -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>📡</span> NHẬT KÝ THỜI GIAN THỰC
+        </div>
+        <span style="font-size:10px;color:var(--cyan);animation:pulseAnim 1s infinite;">● LIVE</span>
+      </div>
+      <div class="panel-content">
+        <div class="terminal-feed" id="terminalFeed">
+          <!-- Live events go here -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <strong>Beta Holding</strong> &bull; Bảo trợ hệ sinh thái: <strong>Bravinall (Bravin, Antifact, Micron)</strong> &bull; Chủ tịch: <strong>Phạm Việt Hà (vtvcab17@gmail.com)</strong>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/vtvcab17-max/Beta" target="_blank">GitHub Repo</a>
+      <a href="https://bravinall.vtvcab17.workers.dev/" target="_blank">Bravinall Web</a>
+      <a href="PAYMENT_INTEGRATION.md" target="_blank">Cổng Thanh Toán</a>
+    </div>
+  </footer>
+
+  <script>
+    /* =====================================================================
+       AUDIO SYNTHESIZER (8-bit Web Audio API - Zero External Dependencies)
+       ===================================================================== */
+    class RetroAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
+      playBleep(freq = 440, type = 'square', duration = 0.08) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {}
+      }
+      playPulse() {
+        this.playBleep(523.25, 'triangle', 0.1);
+        setTimeout(() => this.playBleep(659.25, 'sine', 0.15), 60);
+      }
+      playCoin() {
+        this.playBleep(987.77, 'square', 0.08);
+        setTimeout(() => this.playBleep(1318.51, 'square', 0.2), 70);
+      }
+      playRadar() {
+        this.playBleep(320, 'sawtooth', 0.06);
+      }
+    }
+
+    const sound = new RetroAudio();
+
+    /* =====================================================================
+       STATE & DATA DEFINITION
+       ===================================================================== */
+    const AGENTS = [
+      {
+        id: 'supreme',
+        name: 'Supreme Orchestrator',
+        role: 'Tổng Chỉ Huy Beta',
+        icon: '👑',
+        status: 'DIRECTING',
+        task: 'Chỉ đạo toàn bộ lộ trình kinh doanh & sinh tồn của Bravinall',
+        color: '#6366F1',
+        x: 400, y: 180,
+        targetX: 400, targetY: 180
+      },
+      {
+        id: 'survival',
+        name: 'Survival Monitor',
+        role: 'Vệ Binh Nhịp Tim',
+        icon: '🛡️',
+        status: 'MONITORING',
+        task: 'Kiểm tra nhịp tim sinh tồn 30m/lần, kích hoạt Never-Die logic',
+        color: '#00F5A0',
+        x: 240, y: 220,
+        targetX: 240, targetY: 220
+      },
+      {
+        id: 'scout',
+        name: 'Repo Scout',
+        role: 'Trinh Sát GitHub',
+        icon: '🛰️',
+        status: 'SCANNING',
+        task: 'Săn tìm WebCodecs, AI Video & Canvas Engine từ GitHub API',
+        color: '#38BDF8',
+        x: 560, y: 220,
+        targetX: 560, targetY: 220
+      },
+      {
+        id: 'cashflow',
+        name: 'Cashflow Auditor',
+        role: 'Thủ Quỹ PayPal',
+        icon: '💰',
+        status: 'LISTENING',
+        task: 'Giám sát thanh toán về vtvcab17@gmail.com & VietQR',
+        color: '#F2C14E',
+        x: 320, y: 320,
+        targetX: 320, targetY: 320
+      },
+      {
+        id: 'bravin',
+        name: 'Bravin Unit',
+        role: 'Engine Dựng Video',
+        icon: '🎬',
+        status: 'EXPORTING',
+        task: 'Xử lý timeline 4.11, plugin WebAssembly & render video',
+        color: '#7B6CF6',
+        x: 480, y: 320,
+        targetX: 480, targetY: 320
+      },
+      {
+        id: 'antifact',
+        name: 'Antifact Unit',
+        role: 'Design & Canvas AI',
+        icon: '🎨',
+        status: 'IDLE',
+        task: 'Sẵn sàng tách layer, xóa vật thể bằng AI & chuyển file',
+        color: '#2FD0EE',
+        x: 160, y: 340,
+        targetX: 160, targetY: 340
+      },
+      {
+        id: 'micron',
+        name: 'Micron Unit',
+        role: 'Workflow Nodes',
+        icon: '⚡',
+        status: 'CONNECTED',
+        task: 'Nối pipeline tự động & mở rộng chợ plugin Motion Tracking',
+        color: '#8B6BFF',
+        x: 640, y: 340,
+        targetX: 640, targetY: 340
+      },
+      {
+        id: 'cmo',
+        name: 'CMO Agent',
+        role: 'Marketing Nội Dung',
+        icon: '📢',
+        status: 'SCRIPTING',
+        task: 'Soạn kịch bản review công nghệ TikTok/Shorts 0 đồng',
+        color: '#EC4899',
+        x: 280, y: 420,
+        targetX: 280, targetY: 420
+      },
+      {
+        id: 'sales',
+        name: 'Sales Agent',
+        role: 'Tư Vấn & Chốt Đơn',
+        icon: '🤝',
+        status: 'READY',
+        task: 'Hỗ trợ giải đáp FAQ, kích hoạt đơn hàng All-Access $39',
+        color: '#10B981',
+        x: 520, y: 420,
+        targetX: 520, targetY: 420
+      }
+    ];
+
+    let state = {
+      tokens: 154280,
+      survivalTier: 'NORMAL',
+      cashflowUSD: 39.00,
+      uptimeSeconds: 28800,
+      selectedAgent: null
+    };
+
+    /* =====================================================================
+       UI INITIALIZATION & ROSTER
+       ===================================================================== */
+    const agentListEl = document.getElementById('agentList');
+    const terminalFeedEl = document.getElementById('terminalFeed');
+    const tokenUnitsEl = document.getElementById('tokenUnits');
+    const tokenMeterEl = document.getElementById('tokenMeter');
+    const cashflowTotalEl = document.getElementById('cashflowTotal');
+    const uptimeDisplayEl = document.getElementById('uptimeDisplay');
+    const survivalTierEl = document.getElementById('survivalTier');
+
+    function renderAgentList() {
+      agentListEl.innerHTML = AGENTS.map(agent => `
+        <div class="agent-card ${state.selectedAgent === agent.id ? 'active' : ''}" onclick="selectAgent('${agent.id}')">
+          <div class="agent-head">
+            <div class="agent-name">
+              <span class="agent-icon">${agent.icon}</span>
+              <span>${agent.name}</span>
+            </div>
+            <span class="agent-status-tag ${agent.status.toLowerCase()}">${agent.status}</span>
+          </div>
+          <div class="agent-task">${agent.task}</div>
+          <div class="agent-stats">
+            <span>Vai trò: ${agent.role}</span>
+            <span>Uptime: 100%</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectAgent(id) {
+      state.selectedAgent = id;
+      renderAgentList();
+      const a = AGENTS.find(x => x.id === id);
+      if (a) {
+        logEvent('agent', `[Tương tác] Chọn tác tử [${a.name}] - Nhiệm vụ: ${a.task}`);
+        sound.playBleep(700, 'sine', 0.05);
+      }
+    }
+
+    /* =====================================================================
+       TERMINAL LOGGING
+       ===================================================================== */
+    function logEvent(type, text) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const div = document.createElement('div');
+      div.className = `log-item ${type}`;
+      
+      let badge = 'INFO';
+      if (type === 'heartbeat') badge = 'HEARTBEAT';
+      if (type === 'github') badge = 'SCOUT';
+      if (type === 'finance') badge = 'PAYPAL';
+      if (type === 'warning') badge = 'ALERT';
+
+      div.innerHTML = `
+        <div class="log-time">[${timeStr}] <span class="log-tag" style="color:var(--cyan);">${badge}</span></div>
+        <div>${text}</div>
+      `;
+
+      terminalFeedEl.insertBefore(div, terminalFeedEl.firstChild);
+      if (terminalFeedEl.children.length > 50) {
+        terminalFeedEl.removeChild(terminalFeedEl.lastChild);
+      }
+    }
+
+    /* =====================================================================
+       CANVAS 2D RETRO GAME ENGINE
+       ===================================================================== */
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Game Objects: Server Racks & Core
+    let frame = 0;
+    let pulseWave = 0;
+
+    function drawGrid() {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      ctx.lineWidth = 1;
+      const step = 40;
+      for (let x = 0; x < canvas.width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawCenterCore() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2 - 40;
+
+      // Glow Aura
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 120);
+      grad.addColorStop(0, 'rgba(0, 245, 160, 0.2)');
+      grad.addColorStop(0.5, 'rgba(99, 102, 241, 0.08)');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 120, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rotating Energy Rings
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(frame * 0.015);
+      ctx.strokeStyle = 'rgba(0, 245, 160, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 12]);
+      ctx.beginPath();
+      ctx.arc(0, 0, 70, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.rotate(-frame * 0.025);
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)';
+      ctx.setLineDash([14, 18]);
+      ctx.beginPath();
+      ctx.arc(0, 0, 85, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Core Symbol (Beta Mark)
+      ctx.fillStyle = '#00F5A0';
+      ctx.shadowColor = '#00F5A0';
+      ctx.shadowBlur = 12;
+      ctx.font = 'bold 36px var(--font-display)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('β', cx, cy);
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '10px var(--font-mono)';
+      ctx.fillText('NEVER-DIE APEX', cx, cy + 32);
+
+      // Pulse Wave Animation
+      if (pulseWave > 0) {
+        ctx.save();
+        ctx.strokeStyle = `rgba(0, 245, 160, ${pulseWave / 100})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, (100 - pulseWave) * 3, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+        pulseWave -= 1.5;
+      }
+    }
+
+    function drawServers() {
+      // 4 Server Towers in the corners
+      const towers = [
+        { x: 50, y: 60, name: 'Bravin Core' },
+        { x: canvas.width - 120, y: 60, name: 'GitHub Scout' },
+        { x: 50, y: canvas.height - 110, name: 'PayPal Vault' },
+        { x: canvas.width - 120, y: canvas.height - 110, name: 'Micron AI' }
+      ];
+
+      towers.forEach(t => {
+        // Body
+        ctx.fillStyle = '#121520';
+        ctx.strokeStyle = '#1E2235';
+        ctx.lineWidth = 2;
+        ctx.fillRect(t.x, t.y, 70, 50);
+        ctx.strokeRect(t.x, t.y, 70, 50);
+
+        // Blinking LEDs
+        for (let i = 0; i < 3; i++) {
+          const isBlinking = (Math.sin(frame * 0.1 + i + t.x) > 0);
+          ctx.fillStyle = isBlinking ? '#00F5A0' : '#18382B';
+          ctx.beginPath();
+          ctx.arc(t.x + 14 + i * 18, t.y + 16, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = '#64748B';
+        ctx.font = '9px var(--font-mono)';
+        ctx.textAlign = 'center';
+        ctx.fillText(t.name, t.x + 35, t.y + 40);
+      });
+    }
+
+    function drawAgents() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      AGENTS.forEach((agent, idx) => {
+        // Autonomous subtle movement
+        if (frame % 120 === idx * 10) {
+          agent.targetX = cx + (Math.random() - 0.5) * (canvas.width * 0.65);
+          agent.targetY = cy + (Math.random() - 0.5) * (canvas.height * 0.55);
+        }
+
+        agent.x += (agent.targetX - agent.x) * 0.04;
+        agent.y += (agent.targetY - agent.y) * 0.04;
+
+        // Selection highlight ring
+        if (state.selectedAgent === agent.id) {
+          ctx.strokeStyle = '#00F5A0';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.arc(agent.x, agent.y, 24, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Connection line to central core
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 40);
+        ctx.lineTo(agent.x, agent.y);
+        ctx.stroke();
+
+        // Agent Avatar Bubble
+        ctx.fillStyle = '#181C2A';
+        ctx.strokeStyle = agent.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(agent.x, agent.y, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Icon
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(agent.icon, agent.x, agent.y);
+
+        // Name tag
+        ctx.fillStyle = '#F8FAFC';
+        ctx.font = '10px var(--font-mono)';
+        ctx.fillText(agent.name.split(' ')[0], agent.x, agent.y + 28);
+
+        // Floating speech bubble occasionally
+        if ((frame + idx * 40) % 300 < 120) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 17, 24, 0.9)';
+          ctx.strokeStyle = '#2A3045';
+          ctx.lineWidth = 1;
+          const bubbleText = agent.status;
+          const bw = ctx.measureText(bubbleText).width + 12;
+          ctx.fillRect(agent.x - bw/2, agent.y - 38, bw, 18);
+          ctx.strokeRect(agent.x - bw/2, agent.y - 38, bw, 18);
+          ctx.fillStyle = '#00F5A0';
+          ctx.font = '9px var(--font-mono)';
+          ctx.fillText(bubbleText, agent.x, agent.y - 28);
+          ctx.restore();
+        }
+      });
+    }
+
+    function gameLoop() {
+      frame++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawGrid();
+      drawServers();
+      drawCenterCore();
+      drawAgents();
+
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+
+    /* =====================================================================
+       REAL-TIME SIMULATION & INTERACTION CONTROLS
+       ===================================================================== */
+    // Click on canvas to select agent
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      let clicked = null;
+      AGENTS.forEach(a => {
+        const dist = Math.hypot(a.x - mx, a.y - my);
+        if (dist < 26) clicked = a.id;
+      });
+
+      if (clicked) selectAgent(clicked);
+    });
+
+    // Button: Trigger Pulse
+    document.getElementById('btnPulse').addEventListener('click', () => {
+      pulseWave = 100;
+      sound.playPulse();
+      logEvent('heartbeat', `[Nhịp tim phát thủ công] Quét toàn bộ 4 repo Bravinall: OK. Cấp độ [${state.survivalTier}].`);
+    });
+
+    // Button: Scout
+    document.getElementById('btnScout').addEventListener('click', () => {
+      sound.playRadar();
+      const mockRepos = [
+        'open-ribbi/velocut (WebCodecs WASM Video Editor)',
+        'ffmpegwasm/ffmpeg.wasm (In-Browser Transcoder)',
+        'tldraw/tldraw (Infinite Canvas SDK)',
+        'alexperez/motion-tracker (Perspective OpenCV WASM)'
+      ];
+      const found = mockRepos[Math.floor(Math.random() * mockRepos.length)];
+      logEvent('github', `[Repo Scout] Phát hiện công nghệ mới trên GitHub: ${found}`);
+    });
+
+    // Button: PayPal
+    document.getElementById('btnPaypal').addEventListener('click', () => {
+      sound.playCoin();
+      state.cashflowUSD += 39.00;
+      cashflowTotalEl.innerText = `$${state.cashflowUSD.toFixed(2)}`;
+      logEvent('finance', `[Thanh toán PayPal] Đã nhận $39.00 cho gói 'Bravinall All-Access'. Điều hướng về ví: vtvcab17@gmail.com!`);
+    });
+
+    // Button: Audio Toggle
+    const audioBtn = document.getElementById('btnAudioToggle');
+    audioBtn.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      audioBtn.innerText = sound.enabled ? '🔊 Âm Thanh: BẬT' : '🔇 Âm Thanh: TẮT';
+    });
+
+    // Real-time ticking updates
+    setInterval(() => {
+      state.uptimeSeconds++;
+      const h = String(Math.floor(state.uptimeSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((state.uptimeSeconds % 3600) / 60)).padStart(2, '0');
+      const s = String(state.uptimeSeconds % 60).padStart(2, '0');
+      uptimeDisplayEl.innerText = `${h}:${m}:${s}`;
+
+      // Simulate token consumption and regen
+      const burn = Math.floor(Math.random() * 8) + 2;
+      state.tokens = Math.max(10000, state.tokens - burn + 5);
+      tokenUnitsEl.innerText = state.tokens.toLocaleString();
+    }, 1000);
+
+    // Periodic autonomous simulated logs (every 7 seconds)
+    const AUTO_LOGS = [
+      { type: 'heartbeat', text: 'Nhịp tim sinh tồn định kỳ hoàn thành: TIER NORMAL. Không có nguy cơ cạn kiệt tài nguyên.' },
+      { type: 'github', text: 'Repo-Scout đồng bộ chỉ mục: Đã xác thực 6 thư viện WebAssembly phục vụ Bravin.' },
+      { type: 'heartbeat', text: 'Bravinall Watcher: Đã kiểm tra 4 repo con (Antiface, Bravin, Bravinall, micron) hoạt động ổn định.' },
+      { type: 'finance', text: 'PayPal Webhook Gateway: Đang lắng nghe luồng thanh toán tại vtvcab17@gmail.com.' },
+      { type: 'warning', text: 'Tối ưu hoá token: Đã chuyển hướng các truy vấn nhỏ sang mô hình Gemini Flash để bảo toàn ngân sách.' }
+    ];
+
+    let logIdx = 0;
+    setInterval(() => {
+      const item = AUTO_LOGS[logIdx % AUTO_LOGS.length];
+      logEvent(item.type, item.text);
+      logIdx++;
+    }, 7000);
+
+    // Initial boot
+    renderAgentList();
+    logEvent('heartbeat', 'Hệ thống Beta HQ khởi động thành công. Toàn bộ 9 tác nhân AI đã vào vị trí.');
+    logEvent('finance', 'Cầu nối tài chính PayPal đã khóa mục tiêu: vtvcab17@gmail.com (Phạm Việt Hà).');
+  </script>
+</body>
+</html>

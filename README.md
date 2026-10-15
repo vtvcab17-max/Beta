@@ -1,68 +1,67 @@
-# Beta Holding (Công ty tổng Beta)
+<p align="center"><img src="assets/beta-ngang-nen-toi.svg" alt="Beta" height="56"></p>
 
-> **"Luật duy nhất: Công ty không được chết."**  
-> *Sở hữu & Chỉ đạo tối cao: **Phạm Việt Hà** (`vtvcab17@gmail.com`)*
+<h1 align="center">Beta HQ & Holding Company</h1>
 
-Beta Holding là công ty tổng vận hành bằng AI tự trị (Autonomous Multi-Agent System), kết hợp kiến trúc từ **Conway Automaton** (ví tự trị, áp lực sinh tồn, tự kiểm soát token) và **Paperclip OS** (hệ điều hành tổ chức ảo cho công ty AI).
-
----
-
-## 🏛️ Cơ cấu & Nhiệm vụ
-
-1. **Bảo trợ & Điều phối Bravinall:**
-   - Beta đứng trên đỉnh, chỉ đạo toàn bộ hệ sinh thái của công ty con **Bravinall** (`Antifact`, `Bravin`, `Micron`).
-   - Phối hợp các Agent chuyên trách: `supreme-orchestrator`, `survival-monitor`, `repo-scout`, `cashflow-auditor`.
-
-2. **Cơ chế Sinh tồn & Tiêu thụ Token (Survival Tiers):**
-   - **Tự nuôi sống:** Tự động điều chỉnh mức tiêu thụ token gọi mô hình LLM.
-   - **Chống sập (Self-healing):** Nếu cạn token, hệ thống tự chuyển sang chế độ `LOW_COMPUTE` hoặc mô hình local/miễn phí, tuyệt đối không bị dừng hoạt động.
-
-3. **Săn tìm GitHub Repositories:**
-   - Agent `repo-scout` tự động quét GitHub API định kỳ để tìm kiếm các giải pháp mã nguồn mở mới nhất (WebCodecs, AI Video, Computer Vision, Motion Tracking, Payment Webhooks) và cập nhật vào `SCOUTED_REPOS.md` để nạp vào hệ sinh thái.
-
-4. **Dòng tiền mặt cho Chủ sở hữu:**
-   - Mọi doanh thu bán bản quyền ứng dụng Bravinall được điều chuyển trực tiếp về tài khoản cá nhân của **Phạm Việt Hà** thông qua PayPal (`vtvcab17@gmail.com`) và VietQR tự động.
+<p align="center"><b>Trung tâm điều hành AI thời gian thực và Hệ điều hành Doanh nghiệp Tự trị của Beta.</b><br>
+<i>"Luật tối thượng: Beta KHÔNG ĐƯỢC CHẾT." &bull; Sở hữu: <b>Phạm Việt Hà</b> (vtvcab17@gmail.com)</i></p>
 
 ---
 
-## 🚀 Khởi chạy hệ thống
+## 🎮 1. Beta HQ: Trụ Sở Gamified Thời Gian Thực
+Mỗi sản phẩm là một phòng, mỗi tác nhân AI là một nhân vật. Code vừa đẩy lên ở đâu, nhân vật chạy tới đó.
 
-### Yêu cầu:
-- Node.js (v18+)
-- pnpm hoặc npm
+| Thành phần | Nguồn dữ liệu | Chu kỳ cập nhật |
+|---|---|---|
+| **Bản đồ trụ sở**: 6 phòng (Bravin, Antifact, Micron, Micow, Bravinall, Sảnh Beta), phòng lên cấp theo số commit | GitHub API công khai của `vtvcab17-max` | Trình duyệt tự động hỏi GitHub mỗi 60 giây (dùng ETag) |
+| **Nhân vật**: 🤖 tác nhân AI, 🧑 con người | Commit có gắn `Claude-Session` được gắn đúng cho tác nhân; commit của người được ghi nhận riêng | Mỗi khi có commit mới |
+| **Thẻ tác nhân**: Việc đang làm, model, token viết ra / đã đọc, ngữ cảnh đã dùng, biểu đồ token | Cập nhật qua `du-lieu/trang-thai.json` | Trình duyệt tự đọc lại mỗi phút |
+| **Trạm điều khiển 2D Cockpit (`cockpit.html`)**: Sàn điều khiển Retro Canvas với âm thanh 8-bit và mô phỏng nhịp tim | Local Canvas Engine | Thời gian thực 60 FPS |
 
-### Lệnh thực thi:
+---
+
+## 🏛️ 2. Hệ Điều Hành Tự Trị & Luật Sinh Tồn (Paperclip & Automaton)
+
+Beta Holding là thực thể bảo trợ và chỉ đạo tối cao toàn bộ hệ sinh thái **Bravinall**:
+
+1. **Luật Không Được Chết (Never-Die Rule):** 
+   - Kế thừa từ `Conway-Research/automaton`. Phân tầng 5 cấp sinh tồn (`HIGH` $\rightarrow$ `NORMAL` $\rightarrow$ `LOW_COMPUTE` $\rightarrow$ `CRITICAL` $\rightarrow$ `HIBERNATE`).
+   - Tự động chuyển đổi sang mô hình AI miễn phí/local khi thiếu token để không bao giờ dừng hoạt động.
+2. **Săn tìm GitHub Repos (`src/tools/github-scout.ts`):**
+   - Tự động quét GitHub API định kỳ để tìm kiếm các công nghệ mở (WebCodecs, AI Video, Canvas, WASM) và cập nhật vào `SCOUTED_REPOS.md`.
+3. **Quản trị dòng tiền mặt (`src/finance/paypal-bridge.ts`):**
+   - Toàn bộ doanh thu bán ứng dụng Bravinall được điều hướng trực tiếp về tài khoản cá nhân của **Phạm Việt Hà** qua PayPal (`vtvcab17@gmail.com`) và VietQR.
+4. **Tự khởi động cùng máy tính (`Beta-Never-Die.bat`):**
+   - Đã nạp vào Windows Startup để tự động chạy ngầm mỗi khi bật máy.
+
+---
+
+## 🚀 3. Bật Trang Web GitHub Pages
+
+1. Vào GitHub &rarr; repo **[vtvcab17-max/Beta](https://github.com/vtvcab17-max/Beta)**.
+2. Vào **Settings &rarr; Pages**.
+3. Tại mục **Build and deployment &rarr; Branch**: chọn nhánh `main`, thư mục `/ (root)` rồi bấm **Save**.
+4. Sau 1 phút, trang web game sẽ hoạt động công khai tại:
+   👉 **`https://vtvcab17-max.github.io/Beta/`**
+
+---
+
+## 💻 4. Chạy trên máy cục bộ
+
 ```bash
 # Cài đặt thư viện
 npm install
 
-# Khởi động nhịp tim sinh tồn (Heartbeat Check)
-npm run heartbeat
+# Khởi động nhịp tim sinh tồn (Heartbeat Check):
+npx tsx src/survival/heartbeat.ts
 
-# Kích hoạt Agent quét GitHub Repo
-npm run scout
+# Kích hoạt Agent quét tìm repo công nghệ mới:
+npx tsx src/tools/github-scout.ts
 
-# Khởi động toàn bộ bộ máy Beta
-npm start
+# Chạy web server xem trên máy:
+python3 -m http.server 8080
+# Mở trình duyệt tại: http://localhost:8080/
 ```
 
 ---
 
-## 📂 Cấu trúc thư mục
-
-```
-Beta/
-├── COMPANY.md                  # Hồ sơ công ty tổng theo chuẩn Paperclip
-├── .paperclip.yaml             # Khung cấu hình các Agent và Routines
-├── SCOUTED_REPOS.md            # Danh sách repo GitHub do Beta tự săn tìm
-├── PAYMENT_INTEGRATION.md      # Hướng dẫn tích hợp thanh toán tiền mặt PayPal
-├── src/
-│   ├── index.ts                # Bộ điều phối chính (Supreme Orchestrator)
-│   ├── survival/
-│   │   └── heartbeat.ts        # Động cơ nhịp tim & kiểm soát mức sinh tồn
-│   ├── tools/
-│   │   └── github-scout.ts     # Công cụ tự động quét GitHub API
-│   └── finance/
-│       └── paypal-bridge.ts    # Cầu nối thanh toán tiền mặt về tài khoản cá nhân
-└── data/                       # Lưu trữ trạng thái nhịp tim và giao dịch
-```
+<p align="center">© 2026 Phạm Việt Hà &bull; <a href="https://bravinall.vtvcab17.workers.dev/">Hệ sinh thái Bravinall</a></p>

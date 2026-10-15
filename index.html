@@ -1,1126 +1,384 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beta HQ — Trung Tâm Điều Hành AI Thời Gian Thực</title>
-  <meta name="description" content="Trạm giám sát gamified theo thời gian thực của Beta Holding: Quản trị các tác nhân AI, token nhịp tim sinh tồn và hệ sinh thái Bravinall.">
-  <link rel="icon" type="image/svg+xml" href="brand/beta-mark.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Unbounded:wght@600;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #08090C;
-      --surface: #0F1118;
-      --surface-border: #1E2235;
-      --surface-light: #181C2A;
-      --pulse: #00F5A0;
-      --pulse-glow: rgba(0, 245, 160, 0.35);
-      --indigo: #6366F1;
-      --cyan: #38BDF8;
-      --amber: #F59E0B;
-      --red: #EF4444;
-      --purple: #8B5CF6;
-      --gold: #F2C14E;
-      --text: #F8FAFC;
-      --text-dim: #94A3B8;
-      --text-muted: #64748B;
-      --font-display: 'Unbounded', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font-mono);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 10% 30%, rgba(0, 245, 160, 0.05) 0%, transparent 40%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-    }
-
-    /* Scanline effect */
-    body::after {
-      content: " ";
-      display: block;
-      position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-      background-size: 100% 4px;
-      z-index: 999;
-      pointer-events: none;
-      opacity: 0.35;
-    }
-
-    /* TOP HUD */
-    header {
-      background: rgba(15, 17, 24, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--surface-border);
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      z-index: 100;
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #1E2235, #0F1118);
-      border: 1px solid rgba(0, 245, 160, 0.4);
-      box-shadow: 0 0 16px var(--pulse-glow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .brand-logo svg {
-      width: 28px;
-      height: 28px;
-    }
-
-    .brand-title h1 {
-      font-family: var(--font-display);
-      font-size: 18px;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-title h1 span.highlight {
-      color: var(--pulse);
-      text-shadow: 0 0 10px var(--pulse);
-    }
-
-    .brand-title p {
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    /* HUD METRICS */
-    .hud-metrics {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .metric-card {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      padding: 6px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .metric-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-    }
-
-    .metric-value {
-      font-size: 14px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      background: rgba(0, 245, 160, 0.1);
-      color: var(--pulse);
-      border: 1px solid var(--pulse);
-      box-shadow: 0 0 10px var(--pulse-glow);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--pulse);
-      box-shadow: 0 0 8px var(--pulse);
-      animation: pulseAnim 1.8s infinite ease-in-out;
-    }
-
-    @keyframes pulseAnim {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(0.8); }
-    }
-
-    .token-meter-container {
-      width: 140px;
-      height: 8px;
-      background: #181C2A;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid var(--surface-border);
-      margin-top: 3px;
-    }
-
-    .token-meter-fill {
-      height: 100%;
-      width: 78%;
-      background: linear-gradient(90deg, var(--cyan), var(--pulse));
-      border-radius: 4px;
-      box-shadow: 0 0 8px var(--pulse-glow);
-      transition: width 0.4s ease;
-    }
-
-    /* MAIN COCKPIT */
-    .cockpit-container {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 320px 1fr 340px;
-      gap: 16px;
-      padding: 16px;
-      max-width: 1800px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    @media (max-width: 1200px) {
-      .cockpit-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .panel {
-      background: rgba(15, 17, 24, 0.75);
-      border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .panel-header {
-      padding: 12px 16px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--surface-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .panel-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-content {
-      padding: 12px;
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    /* LEFT: AGENT ROSTER */
-    .agent-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .agent-card {
-      background: var(--surface-light);
-      border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .agent-card:hover, .agent-card.active {
-      border-color: var(--pulse);
-      transform: translateX(4px);
-      box-shadow: -4px 0 0 var(--pulse), 0 4px 16px rgba(0, 245, 160, 0.1);
-    }
-
-    .agent-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .agent-name {
-      font-weight: 700;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .agent-icon {
-      font-size: 16px;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-    }
-
-    .agent-status-tag {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(99, 102, 241, 0.2);
-      color: var(--indigo);
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .agent-status-tag.active {
-      background: rgba(0, 245, 160, 0.15);
-      color: var(--pulse);
-    }
-
-    .agent-status-tag.scanning {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--cyan);
-    }
-
-    .agent-task {
-      font-size: 11px;
-      color: var(--text-dim);
-      line-height: 1.4;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .agent-stats {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 10px;
-      color: var(--text-muted);
-      border-top: 1px dashed rgba(255, 255, 255, 0.08);
-      padding-top: 6px;
-      margin-top: 2px;
-    }
-
-    /* CENTER: GAME WORLD CANVAS */
-    .game-viewport {
-      position: relative;
-      background: #06070A;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--surface-border);
-    }
-
-    #gameCanvas {
-      width: 100%;
-      height: 100%;
-      min-height: 480px;
-      display: block;
-    }
-
-    .game-controls-overlay {
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
-    }
-
-    .action-group {
-      display: flex;
-      gap: 8px;
-      pointer-events: auto;
-    }
-
-    .btn {
-      background: rgba(15, 17, 24, 0.9);
-      border: 1px solid var(--surface-border);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn:hover {
-      border-color: var(--pulse);
-      background: var(--surface-light);
-      color: var(--pulse);
-      transform: translateY(-2px);
-      box-shadow: 0 0 16px var(--pulse-glow);
-    }
-
-    .btn-pulse {
-      background: linear-gradient(135deg, rgba(0, 245, 160, 0.2), rgba(99, 102, 241, 0.2));
-      border-color: var(--pulse);
-      color: var(--pulse);
-    }
-
-    /* RIGHT: LIVE TERMINAL EVENT LOG */
-    .terminal-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    .log-item {
-      padding: 8px;
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 2px solid var(--surface-border);
-      animation: fadeIn 0.3s ease;
-      word-break: break-word;
-    }
-
-    .log-item.heartbeat { border-left-color: var(--pulse); }
-    .log-item.github { border-left-color: var(--cyan); }
-    .log-item.finance { border-left-color: var(--gold); }
-    .log-item.warning { border-left-color: var(--amber); }
-
-    .log-time {
-      color: var(--text-muted);
-      font-size: 9px;
-      margin-bottom: 2px;
-    }
-
-    .log-tag {
-      font-weight: 700;
-      margin-right: 4px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* FOOTER BAR */
-    footer {
-      background: var(--surface);
-      border-top: 1px solid var(--surface-border);
-      padding: 8px 24px;
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-links a {
-      color: var(--cyan);
-      text-decoration: none;
-      margin-left: 12px;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Beta HQ</title>
+<meta name="description" content="Beta HQ: xem theo thời gian thực các tác nhân AI của Beta đang làm gì, token chạy ra sao, code nào vừa được đẩy lên.">
+<link rel="icon" href="assets/beta-bieu-tuong.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Unbounded:wght@600;700&display=swap">
+<style>
+/* Beta HQ: bản đồ trụ sở kiểu game. Phòng = sản phẩm, nhân vật = tác nhân AI, nhật ký = sự kiện GitHub thật. */
+:root{
+  --ink:#0f1014;--panel:#17181e;--panel2:#1d1e26;--line:rgba(231,231,240,.09);--fg:#ecebf3;--mu:#9a99a8;
+  --iris:#7b6cf6;--gold:#f2c14e;--ok:#3ddc97;--warn:#f2994a;
+  --fd:"Unbounded",system-ui,sans-serif;--fb:"Be Vietnam Pro",system-ui,sans-serif;--fm:"JetBrains Mono",ui-monospace,monospace;
+  --r:18px;color-scheme:dark
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--fg);font:400 15px/1.5 var(--fb);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,2.5vw,32px)}
+/* thanh trên */
+.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ink) 85%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;min-height:60px}
+.bar img{height:30px;display:block}
+.live{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:999px;background:var(--panel)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:ping 1.6s infinite}
+.live.warn i{background:var(--warn);animation:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 70%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+.bar .sp{margin-left:auto;display:flex;gap:16px;align-items:center;font:500 12px/1.3 var(--fm);color:var(--mu);flex-wrap:wrap}
+.bar .sp b{color:var(--gold);font-weight:700}
+/* tổng */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.stat{background:var(--panel);border-radius:var(--r);padding:14px 16px}
+.stat dt{font:500 11px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.stat dd{margin:6px 0 0;font:700 clamp(20px,2.4vw,30px)/1 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat dd small{font:500 12px var(--fb);color:var(--mu);letter-spacing:0;margin-left:6px}
+/* bố cục */
+.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:16px;align-items:start}
+.card{background:var(--panel);border-radius:var(--r);padding:14px}
+.card h2{margin:0 0 10px;font:600 15px/1.2 var(--fd);letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.card h2 span{font:500 11px var(--fm);color:var(--mu);letter-spacing:.08em;margin-left:auto}
+/* bản đồ */
+.map{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;background:
+  linear-gradient(var(--sky1,#151626),var(--sky2,#0f1014));}
+.map::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:4% 6.4%}
+.room{position:absolute;border-radius:12px;background:color-mix(in srgb,var(--c) 14%,#191a22);border:2px solid color-mix(in srgb,var(--c) 40%,transparent);display:flex;flex-direction:column;padding:8px 10px;transition:box-shadow .4s,border-color .4s}
+.room.hot{box-shadow:0 0 0 3px var(--c),0 0 40px color-mix(in srgb,var(--c) 60%,transparent);border-color:var(--c)}
+.room header{display:flex;align-items:center;gap:7px;font:700 clamp(10px,1.1vw,14px)/1 var(--fd)}
+.room header img{width:clamp(16px,1.6vw,22px);height:clamp(16px,1.6vw,22px)}
+.room .xp{margin-top:auto;font:500 clamp(9px,.85vw,11px)/1.35 var(--fm);color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room .xp b{color:var(--fg)}
+.room .lv{font:700 clamp(9px,.8vw,11px)/1 var(--fm);margin-left:auto;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.35);color:var(--c);white-space:nowrap}
+.room .desk{position:absolute;left:12%;right:12%;top:46%;height:9%;border-radius:4px;background:rgba(255,255,255,.05)}
+/* nhân vật */
+.agent{position:absolute;width:5.2%;aspect-ratio:1;transform:translate(-50%,-80%);transition:left 2.4s ease-in-out,top 2.4s ease-in-out;z-index:5;cursor:pointer}
+.agent svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.agent.walk svg{animation:bob .35s infinite alternate}
+@keyframes bob{to{transform:translateY(-8%)}}
+.agent .name{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;font:700 clamp(8px,.75vw,10px)/1 var(--fm);white-space:nowrap;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:5px}
+.bub{position:absolute;bottom:108%;left:50%;transform:translateX(-50%);width:max-content;max-width:clamp(120px,16vw,220px);font:600 clamp(9px,.8vw,11px)/1.3 var(--fb);background:#fff;color:#111;padding:5px 8px;border-radius:9px;opacity:0;transition:opacity .3s;pointer-events:none}
+.bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#fff}
+.agent.say .bub{opacity:1}
+.zzz{position:absolute;right:-10%;top:-10%;font:700 clamp(9px,.9vw,12px) var(--fm);color:var(--mu);animation:z 2s infinite}
+@keyframes z{0%{opacity:0;transform:translate(0,0)}50%{opacity:1}100%{opacity:0;transform:translate(40%,-60%)}}
+.float{position:absolute;z-index:8;font:700 clamp(10px,1vw,13px)/1 var(--fm);color:var(--gold);pointer-events:none;animation:up 1.8s ease-out forwards;white-space:nowrap}
+@keyframes up{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-260%)}}
+.coin{position:fixed;z-index:30;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);pointer-events:none;transition:left .9s cubic-bezier(.5,-.3,.6,1),top .9s cubic-bezier(.5,-.3,.6,1),opacity .9s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font:500 12px var(--fm);color:var(--mu)}
+/* tác nhân */
+.agents{display:grid;gap:10px}
+.ag{background:var(--panel2);border-radius:14px;padding:12px;display:grid;gap:8px}
+.ag .h{display:flex;align-items:center;gap:10px}
+.ag .h svg{width:34px;height:34px;flex:none}
+.ag .h b{font:600 14px/1.25 var(--fb);display:block}
+.ag .h small{font:500 11px var(--fm);color:var(--mu)}
+.st{margin-left:auto;font:700 10px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:rgba(61,220,151,.15);color:var(--ok);white-space:nowrap}
+.st.nghi{background:rgba(154,153,168,.15);color:var(--mu)}
+.ag .doing{font-size:13px;color:color-mix(in srgb,var(--fg) 82%,var(--mu))}
+.meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font:500 11px var(--fm);color:var(--mu)}
+.meter .tr{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.meter .tr i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--iris),#a99ff9);transition:width 1s}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.nums div{background:rgba(0,0,0,.25);border-radius:10px;padding:7px 8px}
+.nums dt{font:500 10px var(--fm);color:var(--mu);letter-spacing:.06em;text-transform:uppercase}
+.nums dd{margin:3px 0 0;font:700 14px var(--fm);font-variant-numeric:tabular-nums}
+.spark{width:100%;height:34px;display:block}
+/* nhật ký */
+.log{display:grid;gap:4px;max-height:520px;overflow:auto;padding-right:4px}
+.ev{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px 8px;border-radius:10px;font-size:13px;line-height:1.4}
+.ev.new{animation:flash 2.4s}
+@keyframes flash{from{background:color-mix(in srgb,var(--iris) 35%,transparent)}to{background:transparent}}
+.ev .ic{font-size:15px;line-height:1.2;text-align:center}
+.ev .t{font:500 11px var(--fm);color:var(--mu);white-space:nowrap}
+.ev .who{font-weight:700}
+.ev .msg{display:block;color:var(--mu);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev a{color:inherit}
+.empty{color:var(--mu);font-size:13px;padding:10px}
+.note{margin:18px 0 30px;font-size:12px;color:var(--mu);max-width:110ch}
+.note b{color:var(--fg);font-weight:600}
+@media (max-width:1000px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.map{aspect-ratio:10/14}.agent{width:11%}.bar .sp{margin-left:0}.room header{font-size:13px}.room .xp{font-size:10px}.card h2 span{display:none}}
+@media (prefers-reduced-motion:reduce){.agent{transition:none}.agent.walk svg,.live i,.zzz{animation:none}}
+</style>
 </head>
 <body>
+<header class="bar"><div class="wrap">
+  <img src="assets/beta-ngang-nen-toi.svg" alt="Beta">
+  <span class="live" id="live"><i></i>HQ · trực tiếp</span>
+  <div class="sp"><span>Hà Nội <b id="clock">--:--</b></span><span id="poll">Đang kết nối GitHub…</span></div>
+</div></header>
 
-  <!-- TOP HUD -->
-  <header>
-    <div class="brand-section">
-      <div class="brand-logo">
-        <svg viewBox="0 0 512 512">
-          <path d="M 170 380 L 170 148 C 170 134 181 124 195 124 C 209 124 220 134 220 148 L 220 380 C 220 394 209 405 195 405 C 181 405 170 394 170 380 Z" fill="#6366F1"/>
-          <path d="M 215 138 C 265 138 318 152 318 198 C 318 244 262 258 215 258" fill="none" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round"/>
-          <path d="M 215 258 C 275 258 335 274 335 328 C 335 382 268 395 215 395" fill="none" stroke="#00F5A0" stroke-width="36" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="brand-title">
-        <h1>BETA <span class="highlight">HOLDING</span> HQ</h1>
-        <p>ZERO-HUMAN AUTONOMOUS CORPORATE ENGINE</p>
-      </div>
-    </div>
+<main class="wrap">
+  <dl class="stats">
+    <div class="stat"><dt>Tác nhân đang làm</dt><dd id="sWork">–</dd></div>
+    <div class="stat"><dt>Token AI viết ra</dt><dd id="sOut">–</dd></div>
+    <div class="stat"><dt>Token AI đã đọc</dt><dd id="sIn">–</dd></div>
+    <div class="stat"><dt>Sự kiện GitHub hôm nay</dt><dd id="sEv">–</dd></div>
+  </dl>
 
-    <div class="hud-metrics">
-      <div class="metric-card">
-        <span class="metric-label">Luật Sinh Tồn</span>
-        <div class="status-badge" id="survivalBadge">
-          <span class="status-dot"></span>
-          <span id="survivalTier">TIER: NORMAL</span>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <span class="metric-label">Token Khả Dụng / Tiêu Thụ</span>
-        <div class="metric-value">
-          <span id="tokenUnits">154,280</span> <span style="font-size:10px;color:var(--pulse);">TKNS</span>
-        </div>
-        <div class="token-meter-container">
-          <div class="token-meter-fill" id="tokenMeter"></div>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <span class="metric-label">Dòng Tiền Mặt (PayPal/VND)</span>
-        <div class="metric-value" style="color:var(--gold);">
-          <span id="cashflowTotal">$39.00</span>
-          <span style="font-size:10px;color:var(--text-muted);">(Phạm Việt Hà)</span>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <span class="metric-label">Hệ Thống Uptime</span>
-        <div class="metric-value" id="uptimeDisplay">00:00:00</div>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN COCKPIT -->
-  <main class="cockpit-container">
-    
-    <!-- LEFT: AI AGENTS ROSTER -->
-    <section class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span>👥</span> TÁC NHÂN AI HOẠT ĐỘNG (9)
-        </div>
-        <span style="font-size:10px;color:var(--pulse);">ACTIVE 100%</span>
-      </div>
-      <div class="panel-content">
-        <div class="agent-list" id="agentList">
-          <!-- Dynamic generated via JS -->
-        </div>
-      </div>
+  <div class="main">
+    <section class="card">
+      <h2>Bản đồ trụ sở <span id="mapNote">bấm vào nhân vật để xem việc</span></h2>
+      <div class="map" id="map"></div>
+      <div class="legend"><span>🤖 tác nhân AI</span><span>🧑 con người</span><span>✨ phòng sáng = vừa có code mới</span></div>
     </section>
-
-    <!-- CENTER: GAMIFIED SIMULATION VIEWPORT -->
-    <section class="game-viewport">
-      <canvas id="gameCanvas"></canvas>
-
-      <div class="game-controls-overlay">
-        <div class="action-group">
-          <button class="btn btn-pulse" id="btnPulse">⚡ Gửi Nhịp Tim (Tick)</button>
-          <button class="btn" id="btnScout">🛰️ Quét GitHub Repo</button>
-          <button class="btn" id="btnPaypal">💰 Đơn Hàng PayPal Mới</button>
-        </div>
-
-        <div class="action-group">
-          <button class="btn" id="btnAudioToggle">🔊 Âm Thanh: BẬT</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- RIGHT: LIVE REAL-TIME TERMINAL -->
-    <section class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span>📡</span> NHẬT KÝ THỜI GIAN THỰC
-        </div>
-        <span style="font-size:10px;color:var(--cyan);animation:pulseAnim 1s infinite;">● LIVE</span>
-      </div>
-      <div class="panel-content">
-        <div class="terminal-feed" id="terminalFeed">
-          <!-- Live events go here -->
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer>
-    <div>
-      <strong>Beta Holding</strong> &bull; Bảo trợ hệ sinh thái: <strong>Bravinall (Bravin, Antifact, Micron)</strong> &bull; Chủ tịch: <strong>Phạm Việt Hà (vtvcab17@gmail.com)</strong>
+    <div style="display:grid;gap:16px">
+      <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
+      <section class="card"><h2>Nhật ký <span>GitHub · 60 giây/lần</span></h2><div class="log" id="log"><p class="empty">Đang tải sự kiện…</p></div></section>
     </div>
-    <div class="footer-links">
-      <a href="https://github.com/vtvcab17-max/Beta" target="_blank">GitHub Repo</a>
-      <a href="https://bravinall.vtvcab17.workers.dev/" target="_blank">Bravinall Web</a>
-      <a href="PAYMENT_INTEGRATION.md" target="_blank">Cổng Thanh Toán</a>
-    </div>
-  </footer>
+  </div>
 
-  <script>
-    /* =====================================================================
-       AUDIO SYNTHESIZER (8-bit Web Audio API - Zero External Dependencies)
-       ===================================================================== */
-    class RetroAudio {
-      constructor() {
-        this.ctx = null;
-        this.enabled = true;
-      }
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-        }
-      }
-      playBleep(freq = 440, type = 'square', duration = 0.08) {
-        if (!this.enabled) return;
-        try {
-          this.init();
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + duration);
-        } catch(e) {}
-      }
-      playPulse() {
-        this.playBleep(523.25, 'triangle', 0.1);
-        setTimeout(() => this.playBleep(659.25, 'sine', 0.15), 60);
-      }
-      playCoin() {
-        this.playBleep(987.77, 'square', 0.08);
-        setTimeout(() => this.playBleep(1318.51, 'square', 0.2), 70);
-      }
-      playRadar() {
-        this.playBleep(320, 'sawtooth', 0.06);
-      }
-    }
+  <p class="note"><b>Số liệu ở đây là thật.</b> Hoạt động code lấy trực tiếp từ GitHub (repo công khai của Beta), trình duyệt của bạn tự hỏi lại mỗi 60 giây. Token và việc của từng tác nhân AI lấy từ ảnh chụp các phiên Claude (<code>du-lieu/trang-thai.json</code>), cập nhật mỗi khi có tác nhân chạy <code>cap-nhat.py</code>; trang tự đọc lại tệp này mỗi phút. Commit có dòng <code>Claude-Session</code> sẽ được gắn đúng cho tác nhân đã viết nó.</p>
+</main>
 
-    const sound = new RetroAudio();
+<script>
+(() => {
+"use strict";
+const OWNER = "vtvcab17-max";
+const ROOMS = {
+  bravin:  { name: "Bravin",    sub: "dựng video", c: "#8b7cff", logo: "assets/bravin.svg",   x: 2,  y: 4,  w: 31, h: 42 },
+  antifact:{ name: "Antifact",  sub: "thiết kế",   c: "#ff4f99", logo: "assets/antifact.svg", x: 34.5,y: 4,  w: 31, h: 42 },
+  micron:  { name: "Micron",    sub: "canvas AI",  c: "#2fd4e8", logo: "assets/micron.svg",   x: 67, y: 4,  w: 31, h: 42 },
+  micow:   { name: "Micow",     sub: "làm nhạc",   c: "#7b6cf6", logo: "assets/micow.svg",    x: 2,  y: 54, w: 31, h: 42 },
+  hq:      { name: "Sảnh Beta", sub: "điều phối",  c: "#f2c14e", logo: "assets/beta-bieu-tuong.svg", x: 34.5,y: 54, w: 31, h: 42 },
+  web:     { name: "Bravinall", sub: "website",    c: "#3ddc97", logo: "assets/beta-bieu-tuong.svg", x: 67, y: 54, w: 31, h: 42 }
+};
+// màn hình hẹp: 2 phòng một hàng, 3 hàng
+const NARROW = { bravin: [3, 3], antifact: [51, 3], micron: [3, 36], micow: [51, 36], hq: [3, 69], web: [51, 69] };
+if (matchMedia("(max-width:560px)").matches) for (const [k, [x, y]] of Object.entries(NARROW)) Object.assign(ROOMS[k], { x, y, w: 46, h: 29 });
+const REPO_ROOM = { micow: "micow", bravin: "bravin", micron: "micron", antiface: "antifact", bravinall: "web", beta: "hq" };
+const roomOf = repo => REPO_ROOM[(repo || "").split("/").pop().toLowerCase()] || "hq";
+const COLORS = ["#7b6cf6", "#2fd4e8", "#ff4f99", "#3ddc97", "#f2994a", "#a99ff9"];
+const $ = id => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const fmt = n => n >= 1e9 ? (n / 1e9).toFixed(2) + " tỷ" : n >= 1e6 ? (n / 1e6).toFixed(1) + " tr" : n >= 1e3 ? (n / 1e3).toFixed(1) + " k" : String(n);
+const ago = iso => { const s = (Date.now() - new Date(iso)) / 1000; return s < 60 ? "vừa xong" : s < 3600 ? Math.floor(s / 60) + " phút" : s < 86400 ? Math.floor(s / 3600) + " giờ" : Math.floor(s / 86400) + " ngày"; };
+const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 
-    /* =====================================================================
-       STATE & DATA DEFINITION
-       ===================================================================== */
-    const AGENTS = [
-      {
-        id: 'supreme',
-        name: 'Supreme Orchestrator',
-        role: 'Tổng Chỉ Huy Beta',
-        icon: '👑',
-        status: 'DIRECTING',
-        task: 'Chỉ đạo toàn bộ lộ trình kinh doanh & sinh tồn của Bravinall',
-        color: '#6366F1',
-        x: 400, y: 180,
-        targetX: 400, targetY: 180
-      },
-      {
-        id: 'survival',
-        name: 'Survival Monitor',
-        role: 'Vệ Binh Nhịp Tim',
-        icon: '🛡️',
-        status: 'MONITORING',
-        task: 'Kiểm tra nhịp tim sinh tồn 30m/lần, kích hoạt Never-Die logic',
-        color: '#00F5A0',
-        x: 240, y: 220,
-        targetX: 240, targetY: 220
-      },
-      {
-        id: 'scout',
-        name: 'Repo Scout',
-        role: 'Trinh Sát GitHub',
-        icon: '🛰️',
-        status: 'SCANNING',
-        task: 'Săn tìm WebCodecs, AI Video & Canvas Engine từ GitHub API',
-        color: '#38BDF8',
-        x: 560, y: 220,
-        targetX: 560, targetY: 220
-      },
-      {
-        id: 'cashflow',
-        name: 'Cashflow Auditor',
-        role: 'Thủ Quỹ PayPal',
-        icon: '💰',
-        status: 'LISTENING',
-        task: 'Giám sát thanh toán về vtvcab17@gmail.com & VietQR',
-        color: '#F2C14E',
-        x: 320, y: 320,
-        targetX: 320, targetY: 320
-      },
-      {
-        id: 'bravin',
-        name: 'Bravin Unit',
-        role: 'Engine Dựng Video',
-        icon: '🎬',
-        status: 'EXPORTING',
-        task: 'Xử lý timeline 4.11, plugin WebAssembly & render video',
-        color: '#7B6CF6',
-        x: 480, y: 320,
-        targetX: 480, targetY: 320
-      },
-      {
-        id: 'antifact',
-        name: 'Antifact Unit',
-        role: 'Design & Canvas AI',
-        icon: '🎨',
-        status: 'IDLE',
-        task: 'Sẵn sàng tách layer, xóa vật thể bằng AI & chuyển file',
-        color: '#2FD0EE',
-        x: 160, y: 340,
-        targetX: 160, targetY: 340
-      },
-      {
-        id: 'micron',
-        name: 'Micron Unit',
-        role: 'Workflow Nodes',
-        icon: '⚡',
-        status: 'CONNECTED',
-        task: 'Nối pipeline tự động & mở rộng chợ plugin Motion Tracking',
-        color: '#8B6BFF',
-        x: 640, y: 340,
-        targetX: 640, targetY: 340
-      },
-      {
-        id: 'cmo',
-        name: 'CMO Agent',
-        role: 'Marketing Nội Dung',
-        icon: '📢',
-        status: 'SCRIPTING',
-        task: 'Soạn kịch bản review công nghệ TikTok/Shorts 0 đồng',
-        color: '#EC4899',
-        x: 280, y: 420,
-        targetX: 280, targetY: 420
-      },
-      {
-        id: 'sales',
-        name: 'Sales Agent',
-        role: 'Tư Vấn & Chốt Đơn',
-        icon: '🤝',
-        status: 'READY',
-        task: 'Hỗ trợ giải đáp FAQ, kích hoạt đơn hàng All-Access $39',
-        color: '#10B981',
-        x: 520, y: 420,
-        targetX: 520, targetY: 420
-      }
-    ];
+// ---------- bản đồ ----------
+const map = $("map"), roomEls = {};
+for (const [k, r] of Object.entries(ROOMS)) {
+  const d = el("div", "room"); d.style.cssText = `left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%;--c:${r.c}`;
+  const h = el("header"); const im = el("img"); im.src = r.logo; im.alt = ""; h.append(im, el("span", null, r.name));
+  const lv = el("span", "lv", "LV 1"); h.append(lv);
+  d.append(h, el("div", "desk"));
+  const xp = el("div", "xp"); xp.append(el("span", null, r.sub)); d.append(xp);
+  map.append(d); roomEls[k] = { d, lv, xp, n: 0 };
+}
+const spot = (room, seed) => { const r = ROOMS[room]; const a = (seed * 9301 + 49297) % 233280 / 233280, b = (seed * 4933 + 1123) % 1000 / 1000; return [r.x + r.w * (.18 + .64 * a), r.y + r.h * (.5 + .2 * b)]; };
+const sprite = (c, human) => human
+  ? `<svg viewBox="0 0 32 32"><circle cx="16" cy="9" r="6" fill="#f3c9a0"/><path d="M10 7q6-6 12 0v-2q-6-5-12 0z" fill="#2a2030"/><rect x="9" y="15" width="14" height="11" rx="5" fill="${c}"/><rect x="11" y="25" width="4" height="5" rx="2" fill="#2a2a38"/><rect x="17" y="25" width="4" height="5" rx="2" fill="#2a2a38"/></svg>`
+  : `<svg viewBox="0 0 32 32"><line x1="16" y1="1" x2="16" y2="5" stroke="${c}" stroke-width="2"/><circle cx="16" cy="1.5" r="1.8" fill="#f2c14e"/><rect x="7" y="5" width="18" height="13" rx="5" fill="${c}"/><rect x="10" y="9" width="12" height="5" rx="2.5" fill="#111216"/><circle cx="13" cy="11.5" r="1.4" fill="#7ff0ff"/><circle cx="19" cy="11.5" r="1.4" fill="#7ff0ff"/><rect x="9" y="19" width="14" height="8" rx="3" fill="${c}" opacity=".85"/><rect x="11" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/><rect x="17" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/></svg>`;
+const actors = {}; // id -> {el, room, ...}
+function actor(id, label, color, human) {
+  if (actors[id]) return actors[id];
+  const a = el("div", "agent"); a.innerHTML = sprite(color, human);
+  const bub = el("div", "bub"); const nm = el("div", "name", label); a.append(bub, nm);
+  a.addEventListener("click", () => say(id, actors[id].task || "Đang chờ việc"));
+  map.append(a);
+  const o = actors[id] = { el: a, bub, room: null, seed: Object.keys(actors).length * 7 + 3, color, human, task: "" };
+  return o;
+}
+function moveTo(id, room) {
+  const o = actors[id]; if (!o) return;
+  const [x, y] = spot(room, o.seed + (o.room === room ? Math.floor(Math.random() * 50) : 0));
+  if (o.room && o.room !== room) { o.el.classList.add("walk"); setTimeout(() => o.el.classList.remove("walk"), 2400); }
+  o.room = room; o.el.style.left = x + "%"; o.el.style.top = y + "%";
+}
+function say(id, text, ms = 5000) {
+  const o = actors[id]; if (!o) return; o.bub.textContent = text; o.el.classList.add("say");
+  clearTimeout(o.t); o.t = setTimeout(() => o.el.classList.remove("say"), ms);
+}
+function setSleep(id, on) {
+  const o = actors[id]; if (!o) return; let z = o.el.querySelector(".zzz");
+  if (on && !z) { z = el("span", "zzz", "z z"); o.el.append(z); } if (!on && z) z.remove();
+}
+function pulse(room, text) {
+  const r = roomEls[room]; if (!r) return; r.d.classList.add("hot"); setTimeout(() => r.d.classList.remove("hot"), 2600);
+  const R = ROOMS[room], f = el("div", "float", text); f.style.left = (R.x + R.w / 2) + "%"; f.style.top = (R.y + R.h * .4) + "%";
+  map.append(f); setTimeout(() => f.remove(), 1900);
+}
+function coins(fromEl, toEl, n) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  for (let i = 0; i < Math.min(n, 12); i++) setTimeout(() => {
+    const c = el("i", "coin"); c.style.left = a.left + a.width / 2 + "px"; c.style.top = a.top + "px"; document.body.append(c);
+    requestAnimationFrame(() => requestAnimationFrame(() => { c.style.left = b.left + b.width / 2 + "px"; c.style.top = b.top + b.height / 2 + "px"; c.style.opacity = ".2"; }));
+    setTimeout(() => c.remove(), 950);
+  }, i * 70);
+}
+// đi loanh quanh trong phòng khi đang làm
+setInterval(() => { for (const [id, o] of Object.entries(actors)) if (o.room && o.working && Math.random() < .35) moveTo(id, o.room); }, 4000);
 
-    let state = {
-      tokens: 154280,
-      survivalTier: 'NORMAL',
-      cashflowUSD: 39.00,
-      uptimeSeconds: 28800,
-      selectedAgent: null
-    };
+// ---------- tác nhân AI (ảnh chụp phiên Claude) ----------
+let agents = [], prevTok = store.get("beta-hq-tok", {});
+const sessionIdx = {};
+function spark(hist) {
+  if (!hist || hist.length < 2) return null;
+  const W = 300, H = 34, xs = hist.map(p => +new Date(p.t)), ys = hist.map(p => p.ra);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs) || x0 + 1, y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const pts = hist.map((p, i) => [((xs[i] - x0) / (x1 - x0 || 1)) * W, H - 3 - ((ys[i] - y0) / (y1 - y0 || 1)) * (H - 6)]);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "spark"); svg.setAttribute("preserveAspectRatio", "none");
+  svg.innerHTML = `<polyline fill="none" stroke="#7b6cf6" stroke-width="2" points="${pts.map(p => p.join(",")).join(" ")}"/><circle cx="${pts.at(-1)[0]}" cy="${pts.at(-1)[1]}" r="3" fill="#f2c14e"/>`;
+  return svg;
+}
+function rate(hist) {
+  if (!hist || hist.length < 2) return null;
+  const a = hist.at(-2), b = hist.at(-1), h = (new Date(b.t) - new Date(a.t)) / 36e5;
+  return h > 0 ? (b.ra - a.ra) / h : null;
+}
+function renderAgents(data) {
+  agents = data.tac_nhan || [];
+  $("snap").textContent = "ảnh chụp " + ago(data.chup_luc) + " trước";
+  const box = $("agents"); box.textContent = "";
+  if (!agents.length) { box.append(el("p", "empty", "Chưa có tác nhân nào.")); return; }
+  let out = 0, inn = 0, work = 0;
+  agents.forEach((a, i) => {
+    sessionIdx[a.id] = i;
+    const color = COLORS[i % COLORS.length], label = "AI-" + (i + 1);
+    const o = actor("s:" + a.id, label, color, false);
+    o.task = a.viec_gan_nhat || a.ten; o.working = a.trang_thai === "dang-lam";
+    if (!o.room || !o.moved) moveTo("s:" + a.id, a.phong || "hq");
+    setSleep("s:" + a.id, !o.working);
+    const t = a.token || {}, tin = (t.vao || 0) + (t.doc_cache || 0) + (t.ghi_cache || 0);
+    out += t.ra || 0; inn += tin; if (o.working) work++;
+    // thẻ
+    const c = el("article", "ag");
+    const h = el("div", "h"); const ic = el("span"); ic.innerHTML = sprite(color, false);
+    const tt = el("div"); tt.append(el("b", null, a.ten), el("small", null, label + " · " + (a.model || "") + " · " + (a.repos || []).join(", ")));
+    h.append(ic.firstChild, tt, el("span", "st" + (o.working ? "" : " nghi"), o.working ? "Đang làm" : "Nghỉ"));
+    c.append(h);
+    if (a.viec_gan_nhat) c.append(el("div", "doing", "↳ " + a.viec_gan_nhat));
+    const ng = a.ngu_canh || {}, pct = ng.toi_da ? Math.min(100, ng.dung / ng.toi_da * 100) : 0;
+    const m = el("div", "meter"); m.append(el("span", null, "Ngữ cảnh")); const tr = el("div", "tr"); const bar = el("i"); bar.style.width = pct + "%"; tr.append(bar); m.append(tr, el("span", null, fmt(ng.dung || 0) + "/" + fmt(ng.toi_da || 0)));
+    c.append(m);
+    const nums = el("dl", "nums");
+    const r = rate(a.lich_su);
+    [["Viết ra", fmt(t.ra || 0)], ["Đã đọc", fmt(tin)], ["Tốc độ", r == null ? "–" : fmt(Math.round(r)) + "/giờ"]].forEach(([k, v]) => { const d = el("div"); d.append(el("dt", null, k), el("dd", null, v)); nums.append(d); });
+    c.append(nums);
+    const sp = spark(a.lich_su); if (sp) c.append(sp);
+    box.append(c);
+    // token tăng so với lần trước -> bắn xu
+    const before = prevTok[a.id];
+    if (before != null && (t.ra || 0) > before) { coins(o.el, $("sOut"), Math.ceil(((t.ra || 0) - before) / 20000) + 2); say("s:" + a.id, "+" + fmt((t.ra || 0) - before) + " token"); }
+    prevTok[a.id] = t.ra || 0;
+  });
+  store.set("beta-hq-tok", prevTok);
+  $("sWork").innerHTML = ""; $("sWork").append(String(work), Object.assign(el("small", null, "/ " + agents.length)));
+  $("sOut").textContent = fmt(out); $("sIn").textContent = fmt(inn);
+}
+async function loadAgents() {
+  try { const r = await fetch("du-lieu/trang-thai.json?v=" + Date.now(), { cache: "no-store" }); if (r.ok) renderAgents(await r.json()); }
+  catch (e) { $("snap").textContent = "chưa đọc được ảnh chụp"; }
+}
 
-    /* =====================================================================
-       UI INITIALIZATION & ROSTER
-       ===================================================================== */
-    const agentListEl = document.getElementById('agentList');
-    const terminalFeedEl = document.getElementById('terminalFeed');
-    const tokenUnitsEl = document.getElementById('tokenUnits');
-    const tokenMeterEl = document.getElementById('tokenMeter');
-    const cashflowTotalEl = document.getElementById('cashflowTotal');
-    const uptimeDisplayEl = document.getElementById('uptimeDisplay');
-    const survivalTierEl = document.getElementById('survivalTier');
+// ---------- GitHub: sự kiện thật ----------
+let etag = null, seen = new Set(store.get("beta-hq-seen", [])), firstLoad = true, nextAt = 0;
+const commitCache = store.get("beta-hq-commits", {});
+const ICON = { PushEvent: "⬆️", CreateEvent: "🌱", DeleteEvent: "🗑️", PullRequestEvent: "🔀", IssuesEvent: "📝", IssueCommentEvent: "💬", ReleaseEvent: "🚀", WatchEvent: "⭐", ForkEvent: "🍴", PublicEvent: "📢" };
+async function commitInfo(repo, sha) {
+  if (commitCache[sha]) return commitCache[sha];
+  try {
+    const r = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, { headers: { Accept: "application/vnd.github+json" } });
+    if (!r.ok) return null; const j = await r.json(); const msg = (j.commit && j.commit.message) || "";
+    commitCache[sha] = { msg, n: 1 }; store.set("beta-hq-commits", commitCache); return commitCache[sha];
+  } catch { return null; }
+}
+const sessionOf = msg => { const m = /Claude-Session:\s*\S*session_([A-Za-z0-9]+)/.exec(msg || ""); return m ? m[1] : null; };
+const isClaude = msg => /Co-Authored-By:\s*Claude/i.test(msg || "") || !!sessionOf(msg);
+function who(msg) {
+  const sid = sessionOf(msg);
+  if (sid && sessionIdx[sid] != null) return { id: "s:" + sid, label: "AI-" + (sessionIdx[sid] + 1) };
+  if (isClaude(msg)) return { id: "claude", label: "Claude" };
+  return { id: "human", label: "Hà" };
+}
+function ensureActor(w) {
+  if (w.id === "human") return actor("human", "Hà", "#f2c14e", true);
+  if (w.id === "claude") return actor("claude", "Claude", "#a99ff9", false);
+  return actors[w.id];
+}
+async function describe(e) {
+  const repo = e.repo.name, short = repo.split("/").pop(), p = e.payload || {};
+  if (e.type === "PushEvent") {
+    const branch = (p.ref || "").replace("refs/heads/", "");
+    let msg = p.commits && p.commits.length ? p.commits[p.commits.length - 1].message : null;
+    if (msg == null && p.head) { const ci = await commitInfo(repo, p.head); msg = ci ? ci.msg : ""; }
+    const n = p.size || (p.commits ? p.commits.length : 1) || 1;
+    return { text: `đẩy ${n} commit lên ${short}/${branch}`, msg: (msg || "").split("\n")[0], full: msg || "", room: roomOf(repo), n };
+  }
+  if (e.type === "CreateEvent") return { text: p.ref_type === "repository" ? `tạo repo ${short}` : `tạo nhánh ${p.ref} ở ${short}`, room: roomOf(repo) };
+  if (e.type === "DeleteEvent") return { text: `xoá nhánh ${p.ref} ở ${short}`, room: roomOf(repo) };
+  if (e.type === "PullRequestEvent") return { text: `${p.action === "closed" && p.pull_request && p.pull_request.merged ? "gộp" : p.action === "opened" ? "mở" : p.action} PR #${p.number} ở ${short}`, msg: p.pull_request && p.pull_request.title, room: roomOf(repo) };
+  if (e.type === "ReleaseEvent") return { text: `phát hành ${(p.release && p.release.tag_name) || ""} cho ${short}`, room: roomOf(repo) };
+  if (e.type === "WatchEvent") return { text: `có người đánh sao ${short}`, room: roomOf(repo), ext: e.actor && e.actor.login };
+  if (e.type === "ForkEvent") return { text: `có người fork ${short}`, room: roomOf(repo), ext: e.actor && e.actor.login };
+  if (e.type === "IssuesEvent") return { text: `${p.action} issue ở ${short}`, msg: p.issue && p.issue.title, room: roomOf(repo) };
+  return { text: `${e.type.replace("Event", "")} ở ${short}`, room: roomOf(repo) };
+}
+function logRow(e, d, w, isNew) {
+  const row = el("div", "ev" + (isNew ? " new" : ""));
+  row.append(el("span", "ic", ICON[e.type] || "•"));
+  const mid = el("div"); const wb = el("span", "who", (w ? w.label : (d.ext || e.actor.login)) + " ");
+  const a = el("a", null, d.text); a.href = `https://github.com/${e.repo.name}`; a.target = "_blank"; a.rel = "noopener";
+  mid.append(wb, a); if (d.msg) mid.append(el("span", "msg", d.msg));
+  row.append(mid, el("span", "t", ago(e.created_at)));
+  return row;
+}
+async function poll() {
+  const headers = { Accept: "application/vnd.github+json" }; if (etag) headers["If-None-Match"] = etag;
+  let r;
+  try { r = await fetch(`https://api.github.com/users/${OWNER}/events/public?per_page=60`, { headers }); }
+  catch { setLive(false, "Mất kết nối GitHub, thử lại sau"); return schedule(60); }
+  const wait = Math.max(60, +(r.headers.get("X-Poll-Interval") || 60));
+  if (r.status === 304) { setLive(true); return schedule(wait); }
+  if (r.status === 403 || r.status === 429) {
+    const reset = +(r.headers.get("X-RateLimit-Reset") || 0) * 1000, s = reset ? Math.max(60, Math.round((reset - Date.now()) / 1000)) : 300;
+    setLive(false, "GitHub tạm giới hạn lượt hỏi, thử lại sau " + Math.ceil(s / 60) + " phút"); return schedule(s);
+  }
+  if (!r.ok) { setLive(false, "GitHub trả lỗi " + r.status); return schedule(120); }
+  etag = r.headers.get("ETag"); const events = await r.json(); setLive(true);
+  const log = $("log");
+  if (firstLoad) log.textContent = "";
+  const fresh = events.filter(e => !seen.has(e.id));
+  const todayKey = new Date().toDateString(); let today = 0;
+  events.forEach(e => { if (new Date(e.created_at).toDateString() === todayKey) today++; });
+  $("sEv").textContent = today;
+  // cũ trước, mới sau để nhân vật đi đúng thứ tự
+  const list = firstLoad ? events.slice().reverse() : fresh.slice().reverse();
+  for (const e of list) {
+    const d = await describe(e);
+    const w = e.type === "PushEvent" ? who(d.full) : null;
+    const row = logRow(e, d, w, !firstLoad);
+    log.prepend(row);
+    // đếm cấp phòng theo số commit
+    const rr = roomEls[d.room]; if (rr && e.type === "PushEvent") { rr.n += d.n || 1; rr.lv.textContent = "LV " + (1 + Math.floor(Math.sqrt(rr.n))); rr.xp.textContent = ""; const b = el("b", null, rr.n + " commit"); rr.xp.append(b, " · " + ago(e.created_at) + " trước"); }
+    if (w && e.type === "PushEvent") {
+      const o = ensureActor(w);
+      if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
+    } else if (!firstLoad) pulse(d.room, ICON[e.type] || "✨");
+    seen.add(e.id);
+  }
+  while (log.children.length > 80) log.lastChild.remove();
+  store.set("beta-hq-seen", [...seen].slice(-300));
+  if (!log.children.length) log.append(el("p", "empty", "Chưa có sự kiện công khai nào gần đây."));
+  firstLoad = false; schedule(wait);
+}
+function setLive(ok, msg) { $("live").classList.toggle("warn", !ok); if (msg) $("poll").textContent = msg; }
+function schedule(s) { nextAt = Date.now() + s * 1000; setTimeout(poll, s * 1000); }
+setInterval(() => {
+  if (nextAt && !$("live").classList.contains("warn")) $("poll").textContent = "Hỏi lại GitHub sau " + Math.max(0, Math.round((nextAt - Date.now()) / 1000)) + " giây";
+  const now = new Date(); $("clock").textContent = new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Ho_Chi_Minh" }).format(now);
+  const h = +new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: "Asia/Ho_Chi_Minh" }).format(now);
+  const night = h < 6 || h >= 19; map.style.setProperty("--sky1", night ? "#0d0e1c" : "#1a1c30"); map.style.setProperty("--sky2", night ? "#08080d" : "#12131b");
+}, 1000);
 
-    function renderAgentList() {
-      agentListEl.innerHTML = AGENTS.map(agent => `
-        <div class="agent-card ${state.selectedAgent === agent.id ? 'active' : ''}" onclick="selectAgent('${agent.id}')">
-          <div class="agent-head">
-            <div class="agent-name">
-              <span class="agent-icon">${agent.icon}</span>
-              <span>${agent.name}</span>
-            </div>
-            <span class="agent-status-tag ${agent.status.toLowerCase()}">${agent.status}</span>
-          </div>
-          <div class="agent-task">${agent.task}</div>
-          <div class="agent-stats">
-            <span>Vai trò: ${agent.role}</span>
-            <span>Uptime: 100%</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function selectAgent(id) {
-      state.selectedAgent = id;
-      renderAgentList();
-      const a = AGENTS.find(x => x.id === id);
-      if (a) {
-        logEvent('agent', `[Tương tác] Chọn tác tử [${a.name}] - Nhiệm vụ: ${a.task}`);
-        sound.playBleep(700, 'sine', 0.05);
-      }
-    }
-
-    /* =====================================================================
-       TERMINAL LOGGING
-       ===================================================================== */
-    function logEvent(type, text) {
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      const div = document.createElement('div');
-      div.className = `log-item ${type}`;
-      
-      let badge = 'INFO';
-      if (type === 'heartbeat') badge = 'HEARTBEAT';
-      if (type === 'github') badge = 'SCOUT';
-      if (type === 'finance') badge = 'PAYPAL';
-      if (type === 'warning') badge = 'ALERT';
-
-      div.innerHTML = `
-        <div class="log-time">[${timeStr}] <span class="log-tag" style="color:var(--cyan);">${badge}</span></div>
-        <div>${text}</div>
-      `;
-
-      terminalFeedEl.insertBefore(div, terminalFeedEl.firstChild);
-      if (terminalFeedEl.children.length > 50) {
-        terminalFeedEl.removeChild(terminalFeedEl.lastChild);
-      }
-    }
-
-    /* =====================================================================
-       CANVAS 2D RETRO GAME ENGINE
-       ===================================================================== */
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    // Game Objects: Server Racks & Core
-    let frame = 0;
-    let pulseWave = 0;
-
-    function drawGrid() {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-      ctx.lineWidth = 1;
-      const step = 40;
-      for (let x = 0; x < canvas.width; x += step) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += step) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-    }
-
-    function drawCenterCore() {
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2 - 40;
-
-      // Glow Aura
-      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 120);
-      grad.addColorStop(0, 'rgba(0, 245, 160, 0.2)');
-      grad.addColorStop(0.5, 'rgba(99, 102, 241, 0.08)');
-      grad.addColorStop(1, 'transparent');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 120, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Rotating Energy Rings
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(frame * 0.015);
-      ctx.strokeStyle = 'rgba(0, 245, 160, 0.4)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([8, 12]);
-      ctx.beginPath();
-      ctx.arc(0, 0, 70, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.rotate(-frame * 0.025);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)';
-      ctx.setLineDash([14, 18]);
-      ctx.beginPath();
-      ctx.arc(0, 0, 85, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-
-      // Core Symbol (Beta Mark)
-      ctx.fillStyle = '#00F5A0';
-      ctx.shadowColor = '#00F5A0';
-      ctx.shadowBlur = 12;
-      ctx.font = 'bold 36px var(--font-display)';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('β', cx, cy);
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = '#94A3B8';
-      ctx.font = '10px var(--font-mono)';
-      ctx.fillText('NEVER-DIE APEX', cx, cy + 32);
-
-      // Pulse Wave Animation
-      if (pulseWave > 0) {
-        ctx.save();
-        ctx.strokeStyle = `rgba(0, 245, 160, ${pulseWave / 100})`;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(cx, cy, (100 - pulseWave) * 3, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-        pulseWave -= 1.5;
-      }
-    }
-
-    function drawServers() {
-      // 4 Server Towers in the corners
-      const towers = [
-        { x: 50, y: 60, name: 'Bravin Core' },
-        { x: canvas.width - 120, y: 60, name: 'GitHub Scout' },
-        { x: 50, y: canvas.height - 110, name: 'PayPal Vault' },
-        { x: canvas.width - 120, y: canvas.height - 110, name: 'Micron AI' }
-      ];
-
-      towers.forEach(t => {
-        // Body
-        ctx.fillStyle = '#121520';
-        ctx.strokeStyle = '#1E2235';
-        ctx.lineWidth = 2;
-        ctx.fillRect(t.x, t.y, 70, 50);
-        ctx.strokeRect(t.x, t.y, 70, 50);
-
-        // Blinking LEDs
-        for (let i = 0; i < 3; i++) {
-          const isBlinking = (Math.sin(frame * 0.1 + i + t.x) > 0);
-          ctx.fillStyle = isBlinking ? '#00F5A0' : '#18382B';
-          ctx.beginPath();
-          ctx.arc(t.x + 14 + i * 18, t.y + 16, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        ctx.fillStyle = '#64748B';
-        ctx.font = '9px var(--font-mono)';
-        ctx.textAlign = 'center';
-        ctx.fillText(t.name, t.x + 35, t.y + 40);
-      });
-    }
-
-    function drawAgents() {
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-
-      AGENTS.forEach((agent, idx) => {
-        // Autonomous subtle movement
-        if (frame % 120 === idx * 10) {
-          agent.targetX = cx + (Math.random() - 0.5) * (canvas.width * 0.65);
-          agent.targetY = cy + (Math.random() - 0.5) * (canvas.height * 0.55);
-        }
-
-        agent.x += (agent.targetX - agent.x) * 0.04;
-        agent.y += (agent.targetY - agent.y) * 0.04;
-
-        // Selection highlight ring
-        if (state.selectedAgent === agent.id) {
-          ctx.strokeStyle = '#00F5A0';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([4, 4]);
-          ctx.beginPath();
-          ctx.arc(agent.x, agent.y, 24, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-
-        // Connection line to central core
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - 40);
-        ctx.lineTo(agent.x, agent.y);
-        ctx.stroke();
-
-        // Agent Avatar Bubble
-        ctx.fillStyle = '#181C2A';
-        ctx.strokeStyle = agent.color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(agent.x, agent.y, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // Icon
-        ctx.font = '14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(agent.icon, agent.x, agent.y);
-
-        // Name tag
-        ctx.fillStyle = '#F8FAFC';
-        ctx.font = '10px var(--font-mono)';
-        ctx.fillText(agent.name.split(' ')[0], agent.x, agent.y + 28);
-
-        // Floating speech bubble occasionally
-        if ((frame + idx * 40) % 300 < 120) {
-          ctx.save();
-          ctx.fillStyle = 'rgba(15, 17, 24, 0.9)';
-          ctx.strokeStyle = '#2A3045';
-          ctx.lineWidth = 1;
-          const bubbleText = agent.status;
-          const bw = ctx.measureText(bubbleText).width + 12;
-          ctx.fillRect(agent.x - bw/2, agent.y - 38, bw, 18);
-          ctx.strokeRect(agent.x - bw/2, agent.y - 38, bw, 18);
-          ctx.fillStyle = '#00F5A0';
-          ctx.font = '9px var(--font-mono)';
-          ctx.fillText(bubbleText, agent.x, agent.y - 28);
-          ctx.restore();
-        }
-      });
-    }
-
-    function gameLoop() {
-      frame++;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drawGrid();
-      drawServers();
-      drawCenterCore();
-      drawAgents();
-
-      requestAnimationFrame(gameLoop);
-    }
-    requestAnimationFrame(gameLoop);
-
-    /* =====================================================================
-       REAL-TIME SIMULATION & INTERACTION CONTROLS
-       ===================================================================== */
-    // Click on canvas to select agent
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-
-      let clicked = null;
-      AGENTS.forEach(a => {
-        const dist = Math.hypot(a.x - mx, a.y - my);
-        if (dist < 26) clicked = a.id;
-      });
-
-      if (clicked) selectAgent(clicked);
-    });
-
-    // Button: Trigger Pulse
-    document.getElementById('btnPulse').addEventListener('click', () => {
-      pulseWave = 100;
-      sound.playPulse();
-      logEvent('heartbeat', `[Nhịp tim phát thủ công] Quét toàn bộ 4 repo Bravinall: OK. Cấp độ [${state.survivalTier}].`);
-    });
-
-    // Button: Scout
-    document.getElementById('btnScout').addEventListener('click', () => {
-      sound.playRadar();
-      const mockRepos = [
-        'open-ribbi/velocut (WebCodecs WASM Video Editor)',
-        'ffmpegwasm/ffmpeg.wasm (In-Browser Transcoder)',
-        'tldraw/tldraw (Infinite Canvas SDK)',
-        'alexperez/motion-tracker (Perspective OpenCV WASM)'
-      ];
-      const found = mockRepos[Math.floor(Math.random() * mockRepos.length)];
-      logEvent('github', `[Repo Scout] Phát hiện công nghệ mới trên GitHub: ${found}`);
-    });
-
-    // Button: PayPal
-    document.getElementById('btnPaypal').addEventListener('click', () => {
-      sound.playCoin();
-      state.cashflowUSD += 39.00;
-      cashflowTotalEl.innerText = `$${state.cashflowUSD.toFixed(2)}`;
-      logEvent('finance', `[Thanh toán PayPal] Đã nhận $39.00 cho gói 'Bravinall All-Access'. Điều hướng về ví: vtvcab17@gmail.com!`);
-    });
-
-    // Button: Audio Toggle
-    const audioBtn = document.getElementById('btnAudioToggle');
-    audioBtn.addEventListener('click', () => {
-      sound.enabled = !sound.enabled;
-      audioBtn.innerText = sound.enabled ? '🔊 Âm Thanh: BẬT' : '🔇 Âm Thanh: TẮT';
-    });
-
-    // Real-time ticking updates
-    setInterval(() => {
-      state.uptimeSeconds++;
-      const h = String(Math.floor(state.uptimeSeconds / 3600)).padStart(2, '0');
-      const m = String(Math.floor((state.uptimeSeconds % 3600) / 60)).padStart(2, '0');
-      const s = String(state.uptimeSeconds % 60).padStart(2, '0');
-      uptimeDisplayEl.innerText = `${h}:${m}:${s}`;
-
-      // Simulate token consumption and regen
-      const burn = Math.floor(Math.random() * 8) + 2;
-      state.tokens = Math.max(10000, state.tokens - burn + 5);
-      tokenUnitsEl.innerText = state.tokens.toLocaleString();
-    }, 1000);
-
-    // Periodic autonomous simulated logs (every 7 seconds)
-    const AUTO_LOGS = [
-      { type: 'heartbeat', text: 'Nhịp tim sinh tồn định kỳ hoàn thành: TIER NORMAL. Không có nguy cơ cạn kiệt tài nguyên.' },
-      { type: 'github', text: 'Repo-Scout đồng bộ chỉ mục: Đã xác thực 6 thư viện WebAssembly phục vụ Bravin.' },
-      { type: 'heartbeat', text: 'Bravinall Watcher: Đã kiểm tra 4 repo con (Antiface, Bravin, Bravinall, micron) hoạt động ổn định.' },
-      { type: 'finance', text: 'PayPal Webhook Gateway: Đang lắng nghe luồng thanh toán tại vtvcab17@gmail.com.' },
-      { type: 'warning', text: 'Tối ưu hoá token: Đã chuyển hướng các truy vấn nhỏ sang mô hình Gemini Flash để bảo toàn ngân sách.' }
-    ];
-
-    let logIdx = 0;
-    setInterval(() => {
-      const item = AUTO_LOGS[logIdx % AUTO_LOGS.length];
-      logEvent(item.type, item.text);
-      logIdx++;
-    }, 7000);
-
-    // Initial boot
-    renderAgentList();
-    logEvent('heartbeat', 'Hệ thống Beta HQ khởi động thành công. Toàn bộ 9 tác nhân AI đã vào vị trí.');
-    logEvent('finance', 'Cầu nối tài chính PayPal đã khóa mục tiêu: vtvcab17@gmail.com (Phạm Việt Hà).');
-  </script>
+loadAgents().then(poll);
+setInterval(loadAgents, 60000);
+})();
+</script>
 </body>
 </html>
