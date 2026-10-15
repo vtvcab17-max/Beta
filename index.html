@@ -100,6 +100,23 @@ button{font:inherit;color:inherit}
 .empty{color:var(--mu);font-size:13px;padding:10px}
 .note{margin:18px 0 30px;font-size:12px;color:var(--mu);max-width:110ch}
 .note b{color:var(--fg);font-weight:600}
+/* trụ sở pixel */
+.mapscroll{overflow-x:auto;border-radius:14px}
+.map.hq{aspect-ratio:16/10;background:#101119;min-width:600px}
+.map.hq::before{display:none}
+.map.hq canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
+.hq-ov{position:absolute;inset:0;pointer-events:none}
+.hq-sign{position:absolute;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:6px;font:700 clamp(10px,1.05vw,13px)/1 var(--fd);white-space:nowrap;background:rgba(10,10,16,.8);padding:4px 7px;border-radius:6px;border-bottom:2px solid var(--c)}
+.hq-sign .lv{font:700 10px/1 var(--fm);color:var(--c)}
+.main>*{min-width:0}
+.legend .drag{display:none}
+@media (max-width:640px){.legend .drag{display:inline}}
+.hq-name{position:absolute;transform:translate(-50%,3px);font:700 clamp(8px,.75vw,10px)/1 var(--fm);background:rgba(0,0,0,.65);padding:2px 4px;border-radius:4px;white-space:nowrap}
+.hq-name.human{color:var(--gold)}
+.hq-bub{position:absolute;bottom:calc(100% + clamp(40px,5.4vw,70px));left:50%;transform:translateX(-50%);width:max-content;max-width:220px;white-space:normal;font:600 11px/1.3 var(--fb);background:#fff;color:#111;padding:5px 8px;border-radius:8px;opacity:0;transition:opacity .3s}
+.hq-bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#fff}
+.hq-name.say .hq-bub{opacity:1}
+.hq-float{position:absolute;font:700 clamp(10px,1vw,13px)/1 var(--fm);color:var(--gold);text-shadow:0 1px 0 #000;animation:up 1.8s ease-out forwards;white-space:nowrap}
 @media (max-width:1000px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.map{aspect-ratio:10/14}.agent{width:11%}.bar .sp{margin-left:0}.room header{font-size:13px}.room .xp{font-size:10px}.card h2 span{display:none}}
 @media (prefers-reduced-motion:reduce){.agent{transition:none}.agent.walk svg,.live i,.zzz{animation:none}}
@@ -122,9 +139,9 @@ button{font:inherit;color:inherit}
 
   <div class="main">
     <section class="card">
-      <h2>Bản đồ trụ sở <span id="mapNote">bấm vào nhân vật để xem việc</span></h2>
-      <div class="map" id="map"></div>
-      <div class="legend"><span>🤖 tác nhân AI</span><span>🧑 con người</span><span>✨ phòng sáng = vừa có code mới</span></div>
+      <h2>Trụ sở Beta <span id="mapNote">bấm vào nhân vật để xem việc</span></h2>
+      <div class="mapscroll"><div class="map" id="map"></div></div>
+      <div class="legend"><span>🤖 tác nhân AI</span><span>🧑 con người</span><span>✨ phòng sáng = vừa có code mới</span><span>🪙 xu bay = token tăng thật</span><span class="drag">↔ kéo ngang để xem hết</span></div>
     </section>
     <div style="display:grid;gap:16px">
       <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
@@ -135,6 +152,7 @@ button{font:inherit;color:inherit}
   <p class="note"><b>Số liệu ở đây là thật.</b> Hoạt động code lấy trực tiếp từ GitHub (repo công khai của Beta), trình duyệt của bạn tự hỏi lại mỗi 60 giây. Token và việc của từng tác nhân AI lấy từ ảnh chụp các phiên Claude (<code>du-lieu/trang-thai.json</code>), cập nhật mỗi khi có tác nhân chạy <code>cap-nhat.py</code>; trang tự đọc lại tệp này mỗi phút. Commit có dòng <code>Claude-Session</code> sẽ được gắn đúng cho tác nhân đã viết nó.</p>
 </main>
 
+<script src="assets/tru-so.js"></script>
 <script>
 (() => {
 "use strict";
@@ -159,49 +177,20 @@ const fmt = n => n >= 1e9 ? (n / 1e9).toFixed(2) + " tỷ" : n >= 1e6 ? (n / 1e6
 const ago = iso => { const s = (Date.now() - new Date(iso)) / 1000; return s < 60 ? "vừa xong" : s < 3600 ? Math.floor(s / 60) + " phút" : s < 86400 ? Math.floor(s / 3600) + " giờ" : Math.floor(s / 86400) + " ngày"; };
 const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 
-// ---------- bản đồ ----------
-const map = $("map"), roomEls = {};
-for (const [k, r] of Object.entries(ROOMS)) {
-  const d = el("div", "room"); d.style.cssText = `left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%;--c:${r.c}`;
-  const h = el("header"); const im = el("img"); im.src = r.logo; im.alt = ""; h.append(im, el("span", null, r.name));
-  const lv = el("span", "lv", "LV 1"); h.append(lv);
-  d.append(h, el("div", "desk"));
-  const xp = el("div", "xp"); xp.append(el("span", null, r.sub)); d.append(xp);
-  map.append(d); roomEls[k] = { d, lv, xp, n: 0 };
-}
-const spot = (room, seed) => { const r = ROOMS[room]; const a = (seed * 9301 + 49297) % 233280 / 233280, b = (seed * 4933 + 1123) % 1000 / 1000; return [r.x + r.w * (.18 + .64 * a), r.y + r.h * (.5 + .2 * b)]; };
+// ---------- bản đồ: trụ sở pixel 2.5D (assets/tru-so.js) ----------
+const map = $("map");
+HQ.init(map, ROOMS);
+{ const sc = map.parentElement; requestAnimationFrame(() => { sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2; }); }
+const roomEls = {}; for (const k of Object.keys(ROOMS)) roomEls[k] = { n: 0 };
+const actors = HQ.actors;
+const actor = (id, label, color, human) => HQ.actor(id, label, color, human);
+const moveTo = (id, room) => HQ.moveTo(id, room);
+const say = (id, text, ms) => HQ.say(id, text, ms);
+const setSleep = (id, on) => HQ.setSleep(id, on);
+const pulse = (room, text) => HQ.pulse(room, text);
 const sprite = (c, human) => human
   ? `<svg viewBox="0 0 32 32"><circle cx="16" cy="9" r="6" fill="#f3c9a0"/><path d="M10 7q6-6 12 0v-2q-6-5-12 0z" fill="#2a2030"/><rect x="9" y="15" width="14" height="11" rx="5" fill="${c}"/><rect x="11" y="25" width="4" height="5" rx="2" fill="#2a2a38"/><rect x="17" y="25" width="4" height="5" rx="2" fill="#2a2a38"/></svg>`
   : `<svg viewBox="0 0 32 32"><line x1="16" y1="1" x2="16" y2="5" stroke="${c}" stroke-width="2"/><circle cx="16" cy="1.5" r="1.8" fill="#f2c14e"/><rect x="7" y="5" width="18" height="13" rx="5" fill="${c}"/><rect x="10" y="9" width="12" height="5" rx="2.5" fill="#111216"/><circle cx="13" cy="11.5" r="1.4" fill="#7ff0ff"/><circle cx="19" cy="11.5" r="1.4" fill="#7ff0ff"/><rect x="9" y="19" width="14" height="8" rx="3" fill="${c}" opacity=".85"/><rect x="11" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/><rect x="17" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/></svg>`;
-const actors = {}; // id -> {el, room, ...}
-function actor(id, label, color, human) {
-  if (actors[id]) return actors[id];
-  const a = el("div", "agent"); a.innerHTML = sprite(color, human);
-  const bub = el("div", "bub"); const nm = el("div", "name", label); a.append(bub, nm);
-  a.addEventListener("click", () => say(id, actors[id].task || "Đang chờ việc"));
-  map.append(a);
-  const o = actors[id] = { el: a, bub, room: null, seed: Object.keys(actors).length * 7 + 3, color, human, task: "" };
-  return o;
-}
-function moveTo(id, room) {
-  const o = actors[id]; if (!o) return;
-  const [x, y] = spot(room, o.seed + (o.room === room ? Math.floor(Math.random() * 50) : 0));
-  if (o.room && o.room !== room) { o.el.classList.add("walk"); setTimeout(() => o.el.classList.remove("walk"), 2400); }
-  o.room = room; o.el.style.left = x + "%"; o.el.style.top = y + "%";
-}
-function say(id, text, ms = 5000) {
-  const o = actors[id]; if (!o) return; o.bub.textContent = text; o.el.classList.add("say");
-  clearTimeout(o.t); o.t = setTimeout(() => o.el.classList.remove("say"), ms);
-}
-function setSleep(id, on) {
-  const o = actors[id]; if (!o) return; let z = o.el.querySelector(".zzz");
-  if (on && !z) { z = el("span", "zzz", "z z"); o.el.append(z); } if (!on && z) z.remove();
-}
-function pulse(room, text) {
-  const r = roomEls[room]; if (!r) return; r.d.classList.add("hot"); setTimeout(() => r.d.classList.remove("hot"), 2600);
-  const R = ROOMS[room], f = el("div", "float", text); f.style.left = (R.x + R.w / 2) + "%"; f.style.top = (R.y + R.h * .4) + "%";
-  map.append(f); setTimeout(() => f.remove(), 1900);
-}
 function coins(fromEl, toEl, n) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
@@ -211,8 +200,6 @@ function coins(fromEl, toEl, n) {
     setTimeout(() => c.remove(), 950);
   }, i * 70);
 }
-// đi loanh quanh trong phòng khi đang làm
-setInterval(() => { for (const [id, o] of Object.entries(actors)) if (o.room && o.working && Math.random() < .35) moveTo(id, o.room); }, 4000);
 
 // ---------- tác nhân AI (ảnh chụp phiên Claude) ----------
 let agents = [], prevTok = store.get("beta-hq-tok", {});
@@ -355,7 +342,7 @@ async function poll() {
     const row = logRow(e, d, w, !firstLoad);
     log.prepend(row);
     // đếm cấp phòng theo số commit
-    const rr = roomEls[d.room]; if (rr && e.type === "PushEvent") { rr.n += d.n || 1; rr.lv.textContent = "LV " + (1 + Math.floor(Math.sqrt(rr.n))); rr.xp.textContent = ""; const b = el("b", null, rr.n + " commit"); rr.xp.append(b, " · " + ago(e.created_at) + " trước"); }
+    const rr = roomEls[d.room]; if (rr && e.type === "PushEvent") { rr.n += d.n || 1; HQ.setRoomInfo(d.room, "LV " + (1 + Math.floor(Math.sqrt(rr.n))), ROOMS[d.room].sub + " · " + rr.n + " commit · " + ago(e.created_at) + " trước"); }
     if (w && e.type === "PushEvent") {
       const o = ensureActor(w);
       if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
@@ -373,7 +360,7 @@ setInterval(() => {
   if (nextAt && !$("live").classList.contains("warn")) $("poll").textContent = "Hỏi lại GitHub sau " + Math.max(0, Math.round((nextAt - Date.now()) / 1000)) + " giây";
   const now = new Date(); $("clock").textContent = new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Ho_Chi_Minh" }).format(now);
   const h = +new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: "Asia/Ho_Chi_Minh" }).format(now);
-  const night = h < 6 || h >= 19; map.style.setProperty("--sky1", night ? "#0d0e1c" : "#1a1c30"); map.style.setProperty("--sky2", night ? "#08080d" : "#12131b");
+  HQ.setNight(h < 6 || h >= 19);
 }, 1000);
 
 loadAgents().then(poll);

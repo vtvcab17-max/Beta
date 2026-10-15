@@ -11,8 +11,8 @@ Mỗi sản phẩm là một phòng, mỗi tác nhân AI là một nhân vật. 
 
 | Phần | Lấy từ đâu | Cập nhật |
 |---|---|---|
-| **Bản đồ trụ sở**: 6 phòng (Bravin, Antifact, Micron, Micow, Bravinall, Sảnh Beta), phòng lên cấp theo số commit | GitHub, repo công khai của `vtvcab17-max` | Trình duyệt tự hỏi GitHub mỗi 60 giây |
-| **Nhân vật**: 🤖 tác nhân AI, 🧑 con người | Commit có dòng `Claude-Session: …session_<id>` được gắn đúng cho tác nhân đó; commit không có dòng Claude là của người | Mỗi lần có commit mới |
+| **Trụ sở pixel 2.5D**: 6 phòng (Bravin, Antifact, Micron, Micow, Bravinall, Sảnh Beta) có bàn, máy tính, đồ đặc trưng; phòng sáng lên khi có commit và lên cấp theo số commit | GitHub, repo công khai của `vtvcab17-max` | Trình duyệt tự hỏi GitHub mỗi 60 giây |
+| **Nhân vật pixel**: 🤖 tác nhân AI đi theo hành lang tới phòng, ngồi gõ phím khi làm, ngủ gục khi nghỉ; 🧑 con người. Token tăng thật thì xu vàng bay vào bảng tổng | Commit có dòng `Claude-Session: …session_<id>` được gắn đúng cho tác nhân đó; commit không có dòng Claude là của người | Mỗi lần có commit mới |
 | **Thẻ tác nhân**: đang làm gì, model, token viết ra / đã đọc, ngữ cảnh đã dùng, biểu đồ token theo thời gian | Ảnh chụp các phiên Claude Code, lưu ở `du-lieu/trang-thai.json` | Mỗi khi chạy `cap-nhat.py`; trang tự đọc lại tệp mỗi phút |
 | **Nhật ký**: commit, nhánh, PR, sao, phát hành | GitHub Events API | 60 giây |
 
