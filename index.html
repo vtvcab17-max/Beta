@@ -68,8 +68,15 @@ a{color:var(--primary)}
 .main>*{min-width:0}
 .card{background:var(--s-low);border-radius:24px;padding:16px}
 .card h2{margin:4px 4px 12px;font:400 22px/28px var(--font);display:flex;align-items:center;gap:8px}
-.card h2 span{font:500 12px/16px var(--font);letter-spacing:.4px;color:var(--on-surface-var);margin-left:auto}
+.card h2>span:not(.floors){font:500 12px/16px var(--font);letter-spacing:.4px;color:var(--on-surface-var);margin-left:auto}
 .stack{display:grid;gap:16px}
+.floors{margin-left:auto;display:inline-flex;border:1px solid var(--outline);border-radius:99px;overflow:hidden;font:500 13px/1 var(--font);letter-spacing:.1px}
+.floors button{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:0;background:transparent;color:var(--on-surface);cursor:pointer;position:relative}
+.floors button+button{border-left:1px solid var(--outline)}
+.floors button .ms{font-size:18px}
+.floors button[aria-pressed="true"]{background:var(--secondary-container);color:var(--on-secondary-container)}
+.floors .dot{display:none;width:8px;height:8px;border-radius:50%;background:#ea4335;margin-left:2px}
+.floors button.has .dot{display:inline-block;animation:ping 1.6s infinite;color:#ea4335}
 /* văn phòng */
 .mapscroll{overflow-x:auto;border-radius:16px}
 .map{position:relative;aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:var(--s-lowest);min-width:600px}
@@ -126,7 +133,7 @@ a{color:var(--primary)}
 .note b{color:var(--on-surface);font-weight:500}
 .note code{font:500 12px var(--mono);background:var(--s-high);padding:1px 5px;border-radius:4px}
 @media (max-width:1000px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.bar .sp{margin-left:0}.card h2 span{display:none}.stat{grid-template-columns:1fr}.stat .ms{grid-row:auto;width:36px;height:36px;font-size:20px}.stat dd{font-size:24px;line-height:30px}}
+@media (max-width:560px){.bar .sp{margin-left:0}.card h2>span:not(.floors){display:none}.card h2{flex-wrap:wrap}.floors{margin-left:0}.floors button{padding:0 10px;font-size:12px}.stat{grid-template-columns:1fr}.stat .ms{grid-row:auto;width:36px;height:36px;font-size:20px}.stat dd{font-size:24px;line-height:30px}}
 @media (prefers-reduced-motion:reduce){.live i{animation:none}}
 </style>
 </head>
@@ -150,9 +157,13 @@ a{color:var(--primary)}
 
   <div class="main">
     <section class="card">
-      <h2>Văn phòng <span id="mapNote">Chạm vào nhân vật để xem đang làm gì</span></h2>
+      <h2>Văn phòng
+        <span class="floors" role="group" aria-label="Chọn tầng">
+          <button type="button" data-f="1" aria-pressed="true"><span class="ms">corporate_fare</span>Tầng 1 · Sản phẩm<i class="dot"></i></button>
+          <button type="button" data-f="2" aria-pressed="false"><span class="ms">construction</span>Tầng 2 · Xưởng<i class="dot"></i></button>
+        </span></h2>
       <div class="mapscroll"><div class="map" id="map"></div></div>
-      <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">hub</span>Tác nhân khác: commit có dòng <code>Agent: Tên</code></span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
+      <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">hub</span>Tác nhân khác: commit có dòng <code>Agent: Tên</code></span><span><span class="ms">elevator</span>Repo mới thành phòng ở tầng 2</span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
     </section>
     <div class="stack">
       <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
@@ -180,7 +191,15 @@ const ROOMS = {
 const NARROW = { bravin: [3, 3], antifact: [51, 3], micron: [3, 36], micow: [51, 36], hq: [3, 69], web: [51, 69] };
 if (matchMedia("(max-width:560px)").matches) for (const [k, [x, y]] of Object.entries(NARROW)) Object.assign(ROOMS[k], { x, y, w: 46, h: 29 });
 const REPO_ROOM = { micow: "micow", bravin: "bravin", micron: "micron", antiface: "antifact", bravinall: "web", beta: "hq" };
-const roomOf = repo => REPO_ROOM[(repo || "").split("/").pop().toLowerCase()] || "hq";
+const NEW_COLORS = ["#24c1e0", "#f538a0", "#fa7b17", "#9334e6", "#1e8e3e"];
+// repo quen thuộc ở tầng 1; repo mới (ví dụ Antigravity vừa tạo) tự thành một phòng ở tầng 2
+function roomOf(repo) {
+  const name = (repo || "").split("/").pop(), low = name.toLowerCase();
+  if (REPO_ROOM[low]) return REPO_ROOM[low];
+  const k = "r:" + low, hash = [...low].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  if (HQ.addRoom(k, { name, sub: "repo " + name + " · tầng 2", c: NEW_COLORS[hash % NEW_COLORS.length] })) return k;
+  return "san2";
+}
 const COLORS = ["#4285f4", "#a142f4", "#ea4335", "#34a853", "#fa7b17", "#24c1e0"];
 const $ = id => document.getElementById(id);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -191,6 +210,11 @@ const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? 
 // ---------- bản đồ: trụ sở pixel 2.5D (assets/tru-so.js) ----------
 const map = $("map");
 HQ.init(map, ROOMS);
+document.querySelectorAll(".floors button").forEach(b => b.addEventListener("click", () => {
+  const f = +b.dataset.f; HQ.setFloor(f);
+  document.querySelectorAll(".floors button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+}));
+setInterval(() => { const a = HQ.activity; document.querySelectorAll(".floors button").forEach(b => b.classList.toggle("has", +b.dataset.f !== HQ.floor && a[b.dataset.f] > 0)); }, 800);
 { const sc = map.parentElement; requestAnimationFrame(() => { sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2; }); }
 const roomEls = {}; for (const k of Object.keys(ROOMS)) roomEls[k] = { n: 0 };
 const actors = HQ.actors;
@@ -317,7 +341,7 @@ async function describe(e) {
     const n = p.size || (p.commits ? p.commits.length : 1) || 1;
     return { text: `đẩy ${n} commit lên ${short}/${branch}`, msg: (msg || "").split("\n")[0], full: msg || "", room: roomOf(repo), n };
   }
-  if (e.type === "CreateEvent") return { text: p.ref_type === "repository" ? `tạo repo ${short}` : `tạo nhánh ${p.ref} ở ${short}`, room: roomOf(repo) };
+  if (e.type === "CreateEvent") return { text: p.ref_type === "repository" ? `tạo repo ${short} (phòng mới ở tầng 2)` : `tạo nhánh ${p.ref} ở ${short}`, room: roomOf(repo), newRoom: p.ref_type === "repository" };
   if (e.type === "DeleteEvent") return { text: `xoá nhánh ${p.ref} ở ${short}`, room: roomOf(repo) };
   if (e.type === "PullRequestEvent") return { text: `${p.action === "closed" && p.pull_request && p.pull_request.merged ? "gộp" : p.action === "opened" ? "mở" : p.action} PR #${p.number} ở ${short}`, msg: p.pull_request && p.pull_request.title, room: roomOf(repo) };
   if (e.type === "ReleaseEvent") return { text: `phát hành ${(p.release && p.release.tag_name) || ""} cho ${short}`, room: roomOf(repo) };
@@ -366,7 +390,7 @@ async function poll() {
     if (w && e.type === "PushEvent") {
       const o = ensureActor(w);
       if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
-    } else if (!firstLoad) pulse(d.room, e.type === "WatchEvent" ? "+1 sao" : "Mới");
+    } else if (!firstLoad) pulse(d.room, d.newRoom ? "Phòng mới" : e.type === "WatchEvent" ? "+1 sao" : "Mới");
     seen.add(e.id);
   }
   while (log.children.length > 80) log.lastChild.remove();
