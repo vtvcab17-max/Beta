@@ -12,6 +12,7 @@ import { BetaHeartbeat } from "./survival/heartbeat.js";
 import { GitHubScout } from "./tools/github-scout.js";
 import { PayPalBridge } from "./finance/paypal-bridge.js";
 import { BountyHunter } from "./tools/bounty-hunter.js";
+import { BetaWalletManager } from "./identity/wallet.js";
 
 async function bootBeta() {
   console.log("===============================================================");
@@ -21,6 +22,11 @@ async function bootBeta() {
   console.log(">> LUẬT TỐI THƯỢNG: BETA KHÔNG BAO GIỜ ĐƯỢC CHẾT");
   console.log(">> MỤC TIÊU: Quản trị Bravinall, tự kiếm token, kéo tiền mặt về");
   console.log("---------------------------------------------------------------\n");
+
+  const walletManager = new BetaWalletManager();
+  const wallet = walletManager.getOrCreateWallet();
+  console.log(">> [Bước 0] Kích hoạt ví Web3 tự trị của Beta (Sovereign Wallet)...");
+  console.log(`- Địa chỉ ví Base (ERC-8004): ${wallet.address}\n`);
 
   const heartbeat = new BetaHeartbeat();
   const scout = new GitHubScout();
