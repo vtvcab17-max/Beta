@@ -5,147 +5,158 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Beta HQ</title>
 <meta name="description" content="Beta HQ: xem theo thời gian thực các tác nhân AI của Beta đang làm gì, token chạy ra sao, code nào vừa được đẩy lên.">
+<meta name="theme-color" content="#fdf8ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141218" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="assets/beta-bieu-tuong.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Unbounded:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
 <style>
-/* Beta HQ: bản đồ trụ sở kiểu game. Phòng = sản phẩm, nhân vật = tác nhân AI, nhật ký = sự kiện GitHub thật. */
+/* Beta HQ theo Material Design 3: màu tông dựng từ màu chủ đạo iris, bề mặt phân cấp bằng sắc độ, bo góc lớn, không viền nặng. */
 :root{
-  --ink:#0f1014;--panel:#17181e;--panel2:#1d1e26;--line:rgba(231,231,240,.09);--fg:#ecebf3;--mu:#9a99a8;
-  --iris:#7b6cf6;--gold:#f2c14e;--ok:#3ddc97;--warn:#f2994a;
-  --fd:"Unbounded",system-ui,sans-serif;--fb:"Be Vietnam Pro",system-ui,sans-serif;--fm:"JetBrains Mono",ui-monospace,monospace;
-  --r:18px;color-scheme:dark
+  --primary:#6750a4;--on-primary:#fff;--primary-container:#e9ddff;--on-primary-container:#22005d;
+  --secondary-container:#e8def8;--on-secondary-container:#1d192b;
+  --tertiary-container:#ffd8e4;--on-tertiary-container:#31111d;
+  --surface:#fdf8ff;--surface-dim:#ded8e1;--s-lowest:#ffffff;--s-low:#f7f2fa;--s-cont:#f2ecf4;--s-high:#ece6ee;--s-highest:#e6e0e9;
+  --on-surface:#1d1b20;--on-surface-var:#49454f;--outline:#79747e;--outline-var:#cac4d0;
+  --ok:#146c2e;--ok-cont:#c4eed0;--warn:#8c5000;--warn-cont:#ffdcbe;
+  --font:"Roboto Flex","Google Sans",Roboto,system-ui,sans-serif;--mono:"Roboto Mono",ui-monospace,monospace;
+  --e1:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15);
+  color-scheme:light
 }
+@media (prefers-color-scheme:dark){:root{
+  --primary:#d0bcff;--on-primary:#381e72;--primary-container:#4f378b;--on-primary-container:#eaddff;
+  --secondary-container:#4a4458;--on-secondary-container:#e8def8;
+  --tertiary-container:#633b48;--on-tertiary-container:#ffd8e4;
+  --surface:#141218;--surface-dim:#141218;--s-lowest:#0f0d13;--s-low:#1d1b20;--s-cont:#211f26;--s-high:#2b2930;--s-highest:#36343b;
+  --on-surface:#e6e0e9;--on-surface-var:#cac4d0;--outline:#938f99;--outline-var:#49454f;
+  --ok:#a6d9b3;--ok-cont:#0f5223;--warn:#ffb870;--warn-cont:#6b3b00;color-scheme:dark}}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--ink);color:var(--fg);font:400 15px/1.5 var(--fb);-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:var(--surface);color:var(--on-surface);font:400 14px/20px var(--font);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
-.wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,2.5vw,32px)}
-/* thanh trên */
-.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ink) 85%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;min-height:60px}
-.bar img{height:30px;display:block}
-.live{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:999px;background:var(--panel)}
-.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:ping 1.6s infinite}
-.live.warn i{background:var(--warn);animation:none}
-@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 70%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
-.bar .sp{margin-left:auto;display:flex;gap:16px;align-items:center;font:500 12px/1.3 var(--fm);color:var(--mu);flex-wrap:wrap}
-.bar .sp b{color:var(--gold);font-weight:700}
-/* tổng */
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
-.stat{background:var(--panel);border-radius:var(--r);padding:14px 16px}
-.stat dt{font:500 11px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
-.stat dd{margin:6px 0 0;font:700 clamp(20px,2.4vw,30px)/1 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.stat dd small{font:500 12px var(--fb);color:var(--mu);letter-spacing:0;margin-left:6px}
+a{color:var(--primary)}
+.ms{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:20px;line-height:1;display:inline-block;font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;-webkit-font-feature-settings:"liga";font-feature-settings:"liga";user-select:none}
+.wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,2.5vw,24px)}
+/* thanh ứng dụng */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface)}
+.bar.scrolled{background:var(--s-cont)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-height:64px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:36px;height:36px;border-radius:10px;display:block}
+.brand h1{margin:0;font:400 22px/28px var(--font)}
+.brand h1 b{font-weight:600}
+.live{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 8px;border-radius:8px;background:var(--ok-cont);color:var(--ok);font:500 13px/1 var(--font)}
+.live i{width:8px;height:8px;border-radius:50%;background:currentColor;animation:ping 1.6s infinite}
+.live.warn{background:var(--warn-cont);color:var(--warn)}.live.warn i{animation:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,currentColor 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+.bar .sp{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chipi{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--outline-var);color:var(--on-surface-var);font:500 13px/1 var(--font)}
+.chipi .ms{font-size:18px}
+.chipi b{color:var(--on-surface);font-weight:600;font-variant-numeric:tabular-nums}
+/* thẻ số liệu */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:8px 0 16px}
+.stat{border-radius:16px;padding:16px;background:var(--s-low);display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.stat .ms{grid-row:span 2;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:24px;background:var(--c-bg);color:var(--c-fg)}
+.stat dt{font:500 12px/16px var(--font);letter-spacing:.4px;color:var(--on-surface-var)}
+.stat dd{margin:0;font:400 28px/36px var(--font);font-variant-numeric:tabular-nums}
+.stat dd small{font:400 14px var(--font);color:var(--on-surface-var);margin-left:4px}
+.c1{--c-bg:var(--primary-container);--c-fg:var(--on-primary-container)}.c2{--c-bg:var(--secondary-container);--c-fg:var(--on-secondary-container)}
+.c3{--c-bg:var(--tertiary-container);--c-fg:var(--on-tertiary-container)}.c4{--c-bg:var(--ok-cont);--c-fg:var(--ok)}
 /* bố cục */
-.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:16px;align-items:start}
-.card{background:var(--panel);border-radius:var(--r);padding:14px}
-.card h2{margin:0 0 10px;font:600 15px/1.2 var(--fd);letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
-.card h2 span{font:500 11px var(--fm);color:var(--mu);letter-spacing:.08em;margin-left:auto}
-/* bản đồ */
-.map{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;background:
-  linear-gradient(var(--sky1,#151626),var(--sky2,#0f1014));}
-.map::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:4% 6.4%}
-.room{position:absolute;border-radius:12px;background:color-mix(in srgb,var(--c) 14%,#191a22);border:2px solid color-mix(in srgb,var(--c) 40%,transparent);display:flex;flex-direction:column;padding:8px 10px;transition:box-shadow .4s,border-color .4s}
-.room.hot{box-shadow:0 0 0 3px var(--c),0 0 40px color-mix(in srgb,var(--c) 60%,transparent);border-color:var(--c)}
-.room header{display:flex;align-items:center;gap:7px;font:700 clamp(10px,1.1vw,14px)/1 var(--fd)}
-.room header img{width:clamp(16px,1.6vw,22px);height:clamp(16px,1.6vw,22px)}
-.room .xp{margin-top:auto;font:500 clamp(9px,.85vw,11px)/1.35 var(--fm);color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.room .xp b{color:var(--fg)}
-.room .lv{font:700 clamp(9px,.8vw,11px)/1 var(--fm);margin-left:auto;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.35);color:var(--c);white-space:nowrap}
-.room .desk{position:absolute;left:12%;right:12%;top:46%;height:9%;border-radius:4px;background:rgba(255,255,255,.05)}
-/* nhân vật */
-.agent{position:absolute;width:5.2%;aspect-ratio:1;transform:translate(-50%,-80%);transition:left 2.4s ease-in-out,top 2.4s ease-in-out;z-index:5;cursor:pointer}
-.agent svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
-.agent.walk svg{animation:bob .35s infinite alternate}
-@keyframes bob{to{transform:translateY(-8%)}}
-.agent .name{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;font:700 clamp(8px,.75vw,10px)/1 var(--fm);white-space:nowrap;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:5px}
-.bub{position:absolute;bottom:108%;left:50%;transform:translateX(-50%);width:max-content;max-width:clamp(120px,16vw,220px);font:600 clamp(9px,.8vw,11px)/1.3 var(--fb);background:#fff;color:#111;padding:5px 8px;border-radius:9px;opacity:0;transition:opacity .3s;pointer-events:none}
-.bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#fff}
-.agent.say .bub{opacity:1}
-.zzz{position:absolute;right:-10%;top:-10%;font:700 clamp(9px,.9vw,12px) var(--fm);color:var(--mu);animation:z 2s infinite}
-@keyframes z{0%{opacity:0;transform:translate(0,0)}50%{opacity:1}100%{opacity:0;transform:translate(40%,-60%)}}
-.float{position:absolute;z-index:8;font:700 clamp(10px,1vw,13px)/1 var(--fm);color:var(--gold);pointer-events:none;animation:up 1.8s ease-out forwards;white-space:nowrap}
-@keyframes up{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-260%)}}
-.coin{position:fixed;z-index:30;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);pointer-events:none;transition:left .9s cubic-bezier(.5,-.3,.6,1),top .9s cubic-bezier(.5,-.3,.6,1),opacity .9s}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font:500 12px var(--fm);color:var(--mu)}
-/* tác nhân */
-.agents{display:grid;gap:10px}
-.ag{background:var(--panel2);border-radius:14px;padding:12px;display:grid;gap:8px}
-.ag .h{display:flex;align-items:center;gap:10px}
-.ag .h svg{width:34px;height:34px;flex:none}
-.ag .h b{font:600 14px/1.25 var(--fb);display:block}
-.ag .h small{font:500 11px var(--fm);color:var(--mu)}
-.st{margin-left:auto;font:700 10px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:rgba(61,220,151,.15);color:var(--ok);white-space:nowrap}
-.st.nghi{background:rgba(154,153,168,.15);color:var(--mu)}
-.ag .doing{font-size:13px;color:color-mix(in srgb,var(--fg) 82%,var(--mu))}
-.meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font:500 11px var(--fm);color:var(--mu)}
-.meter .tr{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
-.meter .tr i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--iris),#a99ff9);transition:width 1s}
-.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.nums div{background:rgba(0,0,0,.25);border-radius:10px;padding:7px 8px}
-.nums dt{font:500 10px var(--fm);color:var(--mu);letter-spacing:.06em;text-transform:uppercase}
-.nums dd{margin:3px 0 0;font:700 14px var(--fm);font-variant-numeric:tabular-nums}
-.spark{width:100%;height:34px;display:block}
-/* nhật ký */
-.log{display:grid;gap:4px;max-height:520px;overflow:auto;padding-right:4px}
-.ev{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px 8px;border-radius:10px;font-size:13px;line-height:1.4}
-.ev.new{animation:flash 2.4s}
-@keyframes flash{from{background:color-mix(in srgb,var(--iris) 35%,transparent)}to{background:transparent}}
-.ev .ic{font-size:15px;line-height:1.2;text-align:center}
-.ev .t{font:500 11px var(--fm);color:var(--mu);white-space:nowrap}
-.ev .who{font-weight:700}
-.ev .msg{display:block;color:var(--mu);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ev a{color:inherit}
-.empty{color:var(--mu);font-size:13px;padding:10px}
-.note{margin:18px 0 30px;font-size:12px;color:var(--mu);max-width:110ch}
-.note b{color:var(--fg);font-weight:600}
-/* trụ sở pixel */
-.mapscroll{overflow-x:auto;border-radius:14px}
-.map.hq{aspect-ratio:16/10;background:#101119;min-width:600px}
-.map.hq::before{display:none}
-.map.hq canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
-.hq-ov{position:absolute;inset:0;pointer-events:none}
-.hq-sign{position:absolute;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:6px;font:700 clamp(10px,1.05vw,13px)/1 var(--fd);white-space:nowrap;background:rgba(10,10,16,.8);padding:4px 7px;border-radius:6px;border-bottom:2px solid var(--c)}
-.hq-sign .lv{font:700 10px/1 var(--fm);color:var(--c)}
+.main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:16px;align-items:start}
 .main>*{min-width:0}
+.card{background:var(--s-low);border-radius:24px;padding:16px}
+.card h2{margin:4px 4px 12px;font:400 22px/28px var(--font);display:flex;align-items:center;gap:8px}
+.card h2 span{font:500 12px/16px var(--font);letter-spacing:.4px;color:var(--on-surface-var);margin-left:auto}
+.stack{display:grid;gap:16px}
+/* văn phòng */
+.mapscroll{overflow-x:auto;border-radius:16px}
+.map{position:relative;aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:var(--s-lowest);min-width:600px}
+.map canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.hq-ov{position:absolute;inset:0;pointer-events:none}
+.hq-sign{position:absolute;transform:translate(-50%,-100%);display:flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 8px;border-radius:8px;background:var(--s-lowest);box-shadow:var(--e1);font:500 13px/1 var(--font);white-space:nowrap;color:var(--on-surface)}
+.hq-sign::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}
+.hq-sign .lv{font:500 11px/1 var(--font);padding:3px 6px;border-radius:6px;background:var(--s-high);color:var(--on-surface-var)}
+.hq-sign .lv:empty{display:none}
+.hq-name{position:absolute;transform:translate(-50%,6px);font:500 11px/1 var(--font);background:var(--s-lowest);color:var(--on-surface);padding:4px 8px;border-radius:99px;box-shadow:var(--e1);white-space:nowrap}
+.hq-name.human{background:var(--tertiary-container);color:var(--on-tertiary-container)}
+.hq-bub{position:absolute;bottom:calc(100% + clamp(44px,5.6vw,72px));left:50%;transform:translateX(-50%) scale(.9);width:max-content;max-width:240px;white-space:normal;font:400 13px/18px var(--font);background:var(--on-surface);color:var(--surface);padding:8px 12px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s}
+.hq-name.say .hq-bub{opacity:1;transform:translateX(-50%) scale(1)}
+.hq-float{position:absolute;font:600 13px/1 var(--font);color:var(--on-primary-container);background:var(--primary-container);padding:6px 10px;border-radius:99px;animation:up 1.8s ease-out forwards;white-space:nowrap;transform:translateX(-50%)}
+@keyframes up{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-160%)}}
+.coin{position:fixed;z-index:30;width:12px;height:12px;border-radius:50%;background:#fbbc04;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none;transition:left .9s cubic-bezier(.3,0,.2,1),top .9s cubic-bezier(.3,0,.2,1),opacity .9s}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 4px 4px}
+.legend>span{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;background:var(--s-high);font:500 12px/1 var(--font);color:var(--on-surface-var)}
+.legend .ms{font-size:16px}
 .legend .drag{display:none}
-@media (max-width:640px){.legend .drag{display:inline}}
-.hq-name{position:absolute;transform:translate(-50%,3px);font:700 clamp(8px,.75vw,10px)/1 var(--fm);background:rgba(0,0,0,.65);padding:2px 4px;border-radius:4px;white-space:nowrap}
-.hq-name.human{color:var(--gold)}
-.hq-bub{position:absolute;bottom:calc(100% + clamp(40px,5.4vw,70px));left:50%;transform:translateX(-50%);width:max-content;max-width:220px;white-space:normal;font:600 11px/1.3 var(--fb);background:#fff;color:#111;padding:5px 8px;border-radius:8px;opacity:0;transition:opacity .3s}
-.hq-bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#fff}
-.hq-name.say .hq-bub{opacity:1}
-.hq-float{position:absolute;font:700 clamp(10px,1vw,13px)/1 var(--fm);color:var(--gold);text-shadow:0 1px 0 #000;animation:up 1.8s ease-out forwards;white-space:nowrap}
+@media (max-width:640px){.legend .drag{display:inline-flex}}
+/* tác nhân */
+.agents{display:grid;gap:8px}
+.ag{background:var(--s-lowest);border-radius:16px;padding:16px;display:grid;gap:12px}
+.ag .h{display:flex;align-items:center;gap:12px}
+.ag .h svg{width:40px;height:40px;flex:none;padding:6px;border-radius:50%;background:var(--primary-container)}
+.ag .h b{font:500 16px/22px var(--font);display:block}
+.ag .h small{font:400 12px/16px var(--font);color:var(--on-surface-var)}
+.st{margin-left:auto;display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:8px;font:500 12px/1 var(--font);background:var(--ok-cont);color:var(--ok);white-space:nowrap}
+.st.nghi{background:var(--s-high);color:var(--on-surface-var)}
+.ag .doing{font-size:14px;line-height:20px;color:var(--on-surface-var)}
+.meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;font:500 12px/16px var(--font);color:var(--on-surface-var)}
+.meter .tr{height:4px;border-radius:99px;background:var(--secondary-container);overflow:hidden}
+.meter .tr i{display:block;height:100%;border-radius:99px;background:var(--primary);transition:width 1s}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.nums div{background:var(--s-cont);border-radius:12px;padding:8px 12px}
+.nums dt{font:500 11px/16px var(--font);letter-spacing:.5px;color:var(--on-surface-var)}
+.nums dd{margin:2px 0 0;font:500 16px/24px var(--font);font-variant-numeric:tabular-nums}
+.spark{width:100%;height:36px;display:block}
+.spark polyline{stroke:var(--primary)}
+/* nhật ký */
+.log{display:grid;gap:2px;max-height:520px;overflow:auto}
+.ev{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px;border-radius:12px;font-size:14px;line-height:20px}
+.ev:hover{background:var(--s-high)}
+.ev.new{animation:flash 2.4s}
+@keyframes flash{from{background:var(--primary-container)}to{background:transparent}}
+.ev .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--secondary-container);color:var(--on-secondary-container);font-size:18px}
+.ev .t{font:400 12px/16px var(--font);color:var(--on-surface-var);white-space:nowrap}
+.ev .who{font-weight:500}
+.ev .msg{display:block;color:var(--on-surface-var);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev a{color:inherit;text-decoration:none}.ev a:hover{text-decoration:underline}
+.empty{color:var(--on-surface-var);font-size:14px;padding:12px}
+.note{margin:16px 4px 32px;font-size:13px;line-height:20px;color:var(--on-surface-var);max-width:110ch}
+.note b{color:var(--on-surface);font-weight:500}
+.note code{font:500 12px var(--mono);background:var(--s-high);padding:1px 5px;border-radius:4px}
 @media (max-width:1000px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.map{aspect-ratio:10/14}.agent{width:11%}.bar .sp{margin-left:0}.room header{font-size:13px}.room .xp{font-size:10px}.card h2 span{display:none}}
-@media (prefers-reduced-motion:reduce){.agent{transition:none}.agent.walk svg,.live i,.zzz{animation:none}}
+@media (max-width:560px){.bar .sp{margin-left:0}.card h2 span{display:none}.stat{grid-template-columns:1fr}.stat .ms{grid-row:auto;width:36px;height:36px;font-size:20px}.stat dd{font-size:24px;line-height:30px}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
 </style>
 </head>
 <body>
-<header class="bar"><div class="wrap">
-  <img src="assets/beta-ngang-nen-toi.svg" alt="Beta">
-  <span class="live" id="live"><i></i>HQ · trực tiếp</span>
-  <div class="sp"><span>Hà Nội <b id="clock">--:--</b></span><span id="poll">Đang kết nối GitHub…</span></div>
+<header class="bar" id="bar"><div class="wrap">
+  <div class="brand"><img src="assets/beta-bieu-tuong.svg" alt=""><h1><b>Beta</b> HQ</h1></div>
+  <span class="live" id="live"><i></i>Trực tiếp</span>
+  <div class="sp">
+    <span class="chipi"><span class="ms">schedule</span>Hà Nội <b id="clock">--:--</b></span>
+    <span class="chipi"><span class="ms">sync</span><span id="poll">Đang kết nối GitHub…</span></span>
+  </div>
 </div></header>
 
 <main class="wrap">
   <dl class="stats">
-    <div class="stat"><dt>Tác nhân đang làm</dt><dd id="sWork">–</dd></div>
-    <div class="stat"><dt>Token AI viết ra</dt><dd id="sOut">–</dd></div>
-    <div class="stat"><dt>Token AI đã đọc</dt><dd id="sIn">–</dd></div>
-    <div class="stat"><dt>Sự kiện GitHub hôm nay</dt><dd id="sEv">–</dd></div>
+    <div class="stat c1"><span class="ms">smart_toy</span><dt>Tác nhân đang làm</dt><dd id="sWork">–</dd></div>
+    <div class="stat c2"><span class="ms">edit_note</span><dt>Token AI viết ra</dt><dd id="sOut">–</dd></div>
+    <div class="stat c3"><span class="ms">menu_book</span><dt>Token AI đã đọc</dt><dd id="sIn">–</dd></div>
+    <div class="stat c4"><span class="ms">commit</span><dt>Sự kiện GitHub hôm nay</dt><dd id="sEv">–</dd></div>
   </dl>
 
   <div class="main">
     <section class="card">
-      <h2>Trụ sở Beta <span id="mapNote">bấm vào nhân vật để xem việc</span></h2>
+      <h2>Văn phòng <span id="mapNote">Chạm vào nhân vật để xem đang làm gì</span></h2>
       <div class="mapscroll"><div class="map" id="map"></div></div>
-      <div class="legend"><span>🤖 tác nhân AI</span><span>🧑 con người</span><span>✨ phòng sáng = vừa có code mới</span><span>🪙 xu bay = token tăng thật</span><span class="drag">↔ kéo ngang để xem hết</span></div>
+      <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
     </section>
-    <div style="display:grid;gap:16px">
+    <div class="stack">
       <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
-      <section class="card"><h2>Nhật ký <span>GitHub · 60 giây/lần</span></h2><div class="log" id="log"><p class="empty">Đang tải sự kiện…</p></div></section>
+      <section class="card"><h2>Hoạt động <span>GitHub · 60 giây/lần</span></h2><div class="log" id="log"><p class="empty">Đang tải sự kiện…</p></div></section>
     </div>
   </div>
 
@@ -158,19 +169,19 @@ button{font:inherit;color:inherit}
 "use strict";
 const OWNER = "vtvcab17-max";
 const ROOMS = {
-  bravin:  { name: "Bravin",    sub: "dựng video", c: "#8b7cff", logo: "assets/bravin.svg",   x: 2,  y: 4,  w: 31, h: 42 },
-  antifact:{ name: "Antifact",  sub: "thiết kế",   c: "#ff4f99", logo: "assets/antifact.svg", x: 34.5,y: 4,  w: 31, h: 42 },
-  micron:  { name: "Micron",    sub: "canvas AI",  c: "#2fd4e8", logo: "assets/micron.svg",   x: 67, y: 4,  w: 31, h: 42 },
-  micow:   { name: "Micow",     sub: "làm nhạc",   c: "#7b6cf6", logo: "assets/micow.svg",    x: 2,  y: 54, w: 31, h: 42 },
-  hq:      { name: "Sảnh Beta", sub: "điều phối",  c: "#f2c14e", logo: "assets/beta-bieu-tuong.svg", x: 34.5,y: 54, w: 31, h: 42 },
-  web:     { name: "Bravinall", sub: "website",    c: "#3ddc97", logo: "assets/beta-bieu-tuong.svg", x: 67, y: 54, w: 31, h: 42 }
+  bravin:  { name: "Bravin",    sub: "dựng video", c: "#4285f4", logo: "assets/bravin.svg",   x: 2,  y: 4,  w: 31, h: 42 },
+  antifact:{ name: "Antifact",  sub: "thiết kế",   c: "#ea4335", logo: "assets/antifact.svg", x: 34.5,y: 4,  w: 31, h: 42 },
+  micron:  { name: "Micron",    sub: "canvas AI",  c: "#12b5cb", logo: "assets/micron.svg",   x: 67, y: 4,  w: 31, h: 42 },
+  micow:   { name: "Micow",     sub: "làm nhạc",   c: "#a142f4", logo: "assets/micow.svg",    x: 2,  y: 54, w: 31, h: 42 },
+  hq:      { name: "Sảnh Beta", sub: "điều phối",  c: "#fbbc04", logo: "assets/beta-bieu-tuong.svg", x: 34.5,y: 54, w: 31, h: 42 },
+  web:     { name: "Bravinall", sub: "website",    c: "#34a853", logo: "assets/beta-bieu-tuong.svg", x: 67, y: 54, w: 31, h: 42 }
 };
 // màn hình hẹp: 2 phòng một hàng, 3 hàng
 const NARROW = { bravin: [3, 3], antifact: [51, 3], micron: [3, 36], micow: [51, 36], hq: [3, 69], web: [51, 69] };
 if (matchMedia("(max-width:560px)").matches) for (const [k, [x, y]] of Object.entries(NARROW)) Object.assign(ROOMS[k], { x, y, w: 46, h: 29 });
 const REPO_ROOM = { micow: "micow", bravin: "bravin", micron: "micron", antiface: "antifact", bravinall: "web", beta: "hq" };
 const roomOf = repo => REPO_ROOM[(repo || "").split("/").pop().toLowerCase()] || "hq";
-const COLORS = ["#7b6cf6", "#2fd4e8", "#ff4f99", "#3ddc97", "#f2994a", "#a99ff9"];
+const COLORS = ["#4285f4", "#a142f4", "#ea4335", "#34a853", "#fa7b17", "#24c1e0"];
 const $ = id => document.getElementById(id);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const fmt = n => n >= 1e9 ? (n / 1e9).toFixed(2) + " tỷ" : n >= 1e6 ? (n / 1e6).toFixed(1) + " tr" : n >= 1e3 ? (n / 1e3).toFixed(1) + " k" : String(n);
@@ -189,8 +200,8 @@ const say = (id, text, ms) => HQ.say(id, text, ms);
 const setSleep = (id, on) => HQ.setSleep(id, on);
 const pulse = (room, text) => HQ.pulse(room, text);
 const sprite = (c, human) => human
-  ? `<svg viewBox="0 0 32 32"><circle cx="16" cy="9" r="6" fill="#f3c9a0"/><path d="M10 7q6-6 12 0v-2q-6-5-12 0z" fill="#2a2030"/><rect x="9" y="15" width="14" height="11" rx="5" fill="${c}"/><rect x="11" y="25" width="4" height="5" rx="2" fill="#2a2a38"/><rect x="17" y="25" width="4" height="5" rx="2" fill="#2a2a38"/></svg>`
-  : `<svg viewBox="0 0 32 32"><line x1="16" y1="1" x2="16" y2="5" stroke="${c}" stroke-width="2"/><circle cx="16" cy="1.5" r="1.8" fill="#f2c14e"/><rect x="7" y="5" width="18" height="13" rx="5" fill="${c}"/><rect x="10" y="9" width="12" height="5" rx="2.5" fill="#111216"/><circle cx="13" cy="11.5" r="1.4" fill="#7ff0ff"/><circle cx="19" cy="11.5" r="1.4" fill="#7ff0ff"/><rect x="9" y="19" width="14" height="8" rx="3" fill="${c}" opacity=".85"/><rect x="11" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/><rect x="17" y="27" width="4" height="4" rx="1.5" fill="#2a2a38"/></svg>`;
+  ? `<svg viewBox="0 0 32 32"><rect x="9" y="17" width="14" height="12" rx="5" fill="${c}"/><circle cx="16" cy="11" r="7" fill="#f6c7a0"/><path d="M9 10a7 7 0 0 1 14 0z" fill="#3c4043"/></svg>`
+  : `<svg viewBox="0 0 32 32"><rect x="9" y="18" width="14" height="11" rx="5" fill="${c}"/><rect x="6" y="5" width="20" height="14" rx="6" fill="#fff" stroke="${c}" stroke-width="1.5"/><rect x="9" y="8" width="14" height="8" rx="4" fill="#202124"/><circle cx="13" cy="12" r="1.6" fill="${c}"/><circle cx="19" cy="12" r="1.6" fill="${c}"/><line x1="16" y1="5" x2="16" y2="2" stroke="${c}" stroke-width="1.5"/><circle cx="16" cy="1.8" r="1.6" fill="${c}"/></svg>`;
 function coins(fromEl, toEl, n) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
@@ -210,7 +221,7 @@ function spark(hist) {
   const x0 = Math.min(...xs), x1 = Math.max(...xs) || x0 + 1, y0 = Math.min(...ys), y1 = Math.max(...ys);
   const pts = hist.map((p, i) => [((xs[i] - x0) / (x1 - x0 || 1)) * W, H - 3 - ((ys[i] - y0) / (y1 - y0 || 1)) * (H - 6)]);
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "spark"); svg.setAttribute("preserveAspectRatio", "none");
-  svg.innerHTML = `<polyline fill="none" stroke="#7b6cf6" stroke-width="2" points="${pts.map(p => p.join(",")).join(" ")}"/><circle cx="${pts.at(-1)[0]}" cy="${pts.at(-1)[1]}" r="3" fill="#f2c14e"/>`;
+  svg.innerHTML = `<polyline fill="none" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="${pts.map(p => p.join(",")).join(" ")}"/>`;
   return svg;
 }
 function rate(hist) {
@@ -266,7 +277,7 @@ async function loadAgents() {
 // ---------- GitHub: sự kiện thật ----------
 let etag = null, seen = new Set(store.get("beta-hq-seen", [])), firstLoad = true, nextAt = 0;
 const commitCache = store.get("beta-hq-commits", {});
-const ICON = { PushEvent: "⬆️", CreateEvent: "🌱", DeleteEvent: "🗑️", PullRequestEvent: "🔀", IssuesEvent: "📝", IssueCommentEvent: "💬", ReleaseEvent: "🚀", WatchEvent: "⭐", ForkEvent: "🍴", PublicEvent: "📢" };
+const ICON = { PushEvent: "upload", CreateEvent: "add_circle", DeleteEvent: "delete", PullRequestEvent: "merge", IssuesEvent: "task_alt", IssueCommentEvent: "chat", ReleaseEvent: "rocket_launch", WatchEvent: "star", ForkEvent: "fork_right", PublicEvent: "public" };
 async function commitInfo(repo, sha) {
   if (commitCache[sha]) return commitCache[sha];
   try {
@@ -284,8 +295,8 @@ function who(msg) {
   return { id: "human", label: "Hà" };
 }
 function ensureActor(w) {
-  if (w.id === "human") return actor("human", "Hà", "#f2c14e", true);
-  if (w.id === "claude") return actor("claude", "Claude", "#a99ff9", false);
+  if (w.id === "human") return actor("human", "Hà", "#fbbc04", true);
+  if (w.id === "claude") return actor("claude", "Claude", "#d97757", false);
   return actors[w.id];
 }
 async function describe(e) {
@@ -308,7 +319,7 @@ async function describe(e) {
 }
 function logRow(e, d, w, isNew) {
   const row = el("div", "ev" + (isNew ? " new" : ""));
-  row.append(el("span", "ic", ICON[e.type] || "•"));
+  row.append(el("span", "ic ms", ICON[e.type] || "bolt"));
   const mid = el("div"); const wb = el("span", "who", (w ? w.label : (d.ext || e.actor.login)) + " ");
   const a = el("a", null, d.text); a.href = `https://github.com/${e.repo.name}`; a.target = "_blank"; a.rel = "noopener";
   mid.append(wb, a); if (d.msg) mid.append(el("span", "msg", d.msg));
@@ -346,7 +357,7 @@ async function poll() {
     if (w && e.type === "PushEvent") {
       const o = ensureActor(w);
       if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
-    } else if (!firstLoad) pulse(d.room, ICON[e.type] || "✨");
+    } else if (!firstLoad) pulse(d.room, e.type === "WatchEvent" ? "+1 sao" : "Mới");
     seen.add(e.id);
   }
   while (log.children.length > 80) log.lastChild.remove();
@@ -363,6 +374,7 @@ setInterval(() => {
   HQ.setNight(h < 6 || h >= 19);
 }, 1000);
 
+addEventListener("scroll", () => document.getElementById("bar").classList.toggle("scrolled", scrollY > 4), { passive: true });
 loadAgents().then(poll);
 setInterval(loadAgents, 60000);
 })();
