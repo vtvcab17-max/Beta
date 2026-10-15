@@ -42,6 +42,15 @@ agents:
       config:
         model: auto
 
+  bounty-hunter:
+    title: Thợ săn tiền thưởng GitHub (Bounty Hunter)
+    description: Tự động quét và giải quyết các Issue có treo thưởng tiền mặt (USD/USDC) từ các dự án mã nguồn mở quốc tế (Algora, Gitcoin, Polar).
+    adapter:
+      type: gemini_local
+      config:
+        model: auto
+
+
 routines:
   heartbeat-survival-check:
     description: Nhịp tim kiểm tra sự sống, tài nguyên token và tình trạng tiến trình
@@ -64,6 +73,13 @@ routines:
         cronExpression: "0 21 * * 0"
         timezone: Asia/Ho_Chi_Minh
 
+  github-bounty-hunting:
+    description: Quét và sàng lọc các công việc có tiền thưởng trên GitHub
+    triggers:
+      - kind: schedule
+        cronExpression: "0 */2 * * *"
+        timezone: Asia/Ho_Chi_Minh
+
 tasks:
   thiet-lap-nhip-tim-sinh-ton:
     priority: urgent
@@ -74,6 +90,10 @@ tasks:
   tich-hop-cong-thanh-toan-paypal:
     priority: high
     assignedTo: cashflow-auditor
+  san-tim-bounty-github:
+    priority: high
+    assignedTo: bounty-hunter
   dieu-phoi-muc-tieu-bravinall:
     priority: high
     assignedTo: supreme-orchestrator
+

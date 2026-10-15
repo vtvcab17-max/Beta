@@ -11,6 +11,7 @@
 import { BetaHeartbeat } from "./survival/heartbeat.js";
 import { GitHubScout } from "./tools/github-scout.js";
 import { PayPalBridge } from "./finance/paypal-bridge.js";
+import { BountyHunter } from "./tools/bounty-hunter.js";
 
 async function bootBeta() {
   console.log("===============================================================");
@@ -24,6 +25,7 @@ async function bootBeta() {
   const heartbeat = new BetaHeartbeat();
   const scout = new GitHubScout();
   const paypal = new PayPalBridge();
+  const bountyHunter = new BountyHunter();
 
   // 1. Nhịp tim ban đầu
   console.log(">> [Bước 1] Kích hoạt nhịp tim sinh tồn (Heartbeat Check)...");
@@ -42,6 +44,11 @@ async function bootBeta() {
   await scout.runFullScout();
   console.log("- Đã cập nhật danh sách công nghệ vào: SCOUTED_REPOS.md\n");
 
+  // 4. Kích hoạt Bounty Hunter săn việc có thưởng
+  console.log(">> [Bước 4] Kích hoạt Agent Bounty-Hunter tìm việc có thưởng trên GitHub...");
+  const bounties = await bountyHunter.runHunt();
+  console.log(`- Đã phát hiện ${bounties.length} cơ hội nhận thưởng. Xuất vào: BOUNTY_TARGETS.md\n`);
+
   console.log("===============================================================");
   console.log("✅ BETA HOLDING ĐÃ KHỞI ĐỘNG THÀNH CÔNG VÀ ĐANG VẬN HÀNH ỔN ĐỊNH!");
   console.log("Nhịp tim tự động kiểm tra định kỳ mỗi 30 phút.");
@@ -57,6 +64,17 @@ async function bootBeta() {
       console.error(`[Heartbeat Error] Lỗi nhẹ nhịp tim: ${err.message}. Beta tự động phục hồi.`);
     }
   }, HEARTBEAT_INTERVAL_MS);
+
+  // Vòng lặp quét Bounty Hunter (2 giờ / lần)
+  const BOUNTY_INTERVAL_MS = 2 * 60 * 60 * 1000;
+  setInterval(async () => {
+    try {
+      console.log(`\n[${new Date().toLocaleTimeString("vi-VN")}] >> Bounty Hunter quét cơ hội kiếm tiền mới...`);
+      await bountyHunter.runHunt();
+    } catch (err: any) {
+      console.error(`[Bounty Hunter Error] Lỗi quét bounty: ${err.message}`);
+    }
+  }, BOUNTY_INTERVAL_MS);
 }
 
 // Bắt mọi lỗi ngoại lệ để không bao giờ bị crash

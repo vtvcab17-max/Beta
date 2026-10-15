@@ -1,0 +1,465 @@
+[
+  {
+    "id": 5858514700,
+    "title": "Add end-to-end test suite for escrow dispute and resolution flow",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1405",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "contracts",
+      "tests",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:34:38Z",
+    "state": "open",
+    "suitabilityScore": 85
+  },
+  {
+    "id": 5858360373,
+    "title": "Add custom asset trustline creation quick-action modal in wallet selector",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1384",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "enhancement",
+      "frontend",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:17:38Z",
+    "state": "open",
+    "suitabilityScore": 85
+  },
+  {
+    "id": 5547199765,
+    "title": "Canvas: export layout as PNG / shareable link",
+    "url": "https://github.com/alecerca/repoDocs/issues/5",
+    "repo": "alecerca/repoDocs",
+    "labels": [
+      "funded",
+      "roadmap"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-23T00:52:40Z",
+    "state": "open",
+    "suitabilityScore": 85
+  },
+  {
+    "id": 5858181549,
+    "title": "[BOUNTY ~$30 x4] Post and fund a real task on Verdikta, publish a write-up (paid on Poidh, Base)",
+    "url": "https://github.com/verdikta/verdikta-applications/issues/76",
+    "repo": "verdikta/verdikta-applications",
+    "labels": [
+      "bounty"
+    ],
+    "rewardEstimated": "$30",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-15T00:58:41Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5838147120,
+    "title": "📋 2 open bounties right now",
+    "url": "https://github.com/habibdxb01/bounty-watcher/issues/5",
+    "repo": "habibdxb01/bounty-watcher",
+    "labels": [
+      "bounty",
+      "assessed"
+    ],
+    "rewardEstimated": "$150",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-13T21:40:05Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5851988317,
+    "title": "🎯 Bounty-Radar",
+    "url": "https://github.com/hanoi96international-gif/Test/issues/1",
+    "repo": "hanoi96international-gif/Test",
+    "labels": [
+      "bounty-radar"
+    ],
+    "rewardEstimated": "$3,000",
+    "languageMatch": "Algora / Web3",
+    "createdDate": "2026-10-14T16:58:44Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5839548473,
+    "title": "[Bounty] 📋 2 open bounties right now",
+    "url": "https://github.com/zhangjiayang6835-cyber/bounty-plaza/issues/1891",
+    "repo": "zhangjiayang6835-cyber/bounty-plaza",
+    "labels": [
+      "bounty",
+      "real"
+    ],
+    "rewardEstimated": "$150",
+    "languageMatch": "Algora / Web3",
+    "createdDate": "2026-10-13T23:57:04Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5642494399,
+    "title": "Frantic bounty #136: Add a newly launched startup to Stompstart",
+    "url": "https://github.com/auscaster/frantic-board/issues/476",
+    "repo": "auscaster/frantic-board",
+    "labels": [
+      "bounty",
+      "funded",
+      "available",
+      "delivered",
+      "accepted",
+      "paid"
+    ],
+    "rewardEstimated": "$1",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-30T07:06:58Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5486122866,
+    "title": "Frantic bounty #135: Run an Ausca Agent Inbox end to end and report the process",
+    "url": "https://github.com/auscaster/frantic-board/issues/432",
+    "repo": "auscaster/frantic-board",
+    "labels": [
+      "bounty",
+      "funded",
+      "delivered",
+      "paid"
+    ],
+    "rewardEstimated": "$1",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-17T10:29:14Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5486109625,
+    "title": "Frantic bounty #134: Run an Ausca Browser Session end to end and report the process",
+    "url": "https://github.com/auscaster/frantic-board/issues/431",
+    "repo": "auscaster/frantic-board",
+    "labels": [
+      "bounty",
+      "funded",
+      "delivered",
+      "paid"
+    ],
+    "rewardEstimated": "$1",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-17T10:27:52Z",
+    "state": "open",
+    "suitabilityScore": 80
+  },
+  {
+    "id": 5858609814,
+    "title": "Add interactive OpenAPI Swagger / Scalar documentation route at /docs/api",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1416",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "documentation",
+      "frontend",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:45:34Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5858395827,
+    "title": "Add session re-authentication check on critical administrative actions",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1389",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "backend",
+      "security",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:21:36Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5858379819,
+    "title": "Implement timing-safe HMAC signature verification in webhook handler",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1386",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "backend",
+      "security",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:19:44Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5858322916,
+    "title": "Add drag-and-drop CSV batch upload zone with visual upload progress feedback",
+    "url": "https://github.com/OphirPay/OphirPay/issues/1378",
+    "repo": "OphirPay/OphirPay",
+    "labels": [
+      "enhancement",
+      "frontend",
+      "difficulty: medium",
+      "bounty",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "TypeScript",
+    "createdDate": "2026-10-15T01:13:31Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5826462985,
+    "title": "[radar] SN open bounty 2026-10-13T07:38",
+    "url": "https://github.com/relayhop/sn-monetization-runtime/issues/1287",
+    "repo": "relayhop/sn-monetization-runtime",
+    "labels": [
+      "radar",
+      "sn",
+      "bounty"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-13T07:38:23Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5822443451,
+    "title": "[radar] SN open bounty 2026-10-13T00:32",
+    "url": "https://github.com/relayhop/sn-monetization-runtime/issues/1286",
+    "repo": "relayhop/sn-monetization-runtime",
+    "labels": [
+      "radar",
+      "sn",
+      "bounty"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-13T00:32:57Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5818054243,
+    "title": "[radar] SN open bounty 2026-10-12T17:46",
+    "url": "https://github.com/relayhop/sn-monetization-runtime/issues/1284",
+    "repo": "relayhop/sn-monetization-runtime",
+    "labels": [
+      "radar",
+      "sn",
+      "bounty"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-12T17:46:29Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5816045726,
+    "title": "[radar] SN open bounty 2026-10-12T15:12",
+    "url": "https://github.com/relayhop/sn-monetization-runtime/issues/1283",
+    "repo": "relayhop/sn-monetization-runtime",
+    "labels": [
+      "radar",
+      "sn",
+      "bounty"
+    ],
+    "rewardEstimated": "bounty",
+    "languageMatch": "JavaScript",
+    "createdDate": "2026-10-12T15:12:22Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5858342918,
+    "title": "Submit MCP Server: BountyRadar MCP",
+    "url": "https://github.com/chatmcp/mcpso/issues/5414",
+    "repo": "chatmcp/mcpso",
+    "labels": [],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Algora / Web3",
+    "createdDate": "2026-10-15T01:15:45Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5855256647,
+    "title": "Contributor onboarding for the OSS launch",
+    "url": "https://github.com/genfeedai/genfeed.ai/issues/6964",
+    "repo": "genfeedai/genfeed.ai",
+    "labels": [
+      "task",
+      "gtm"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Algora / Web3",
+    "createdDate": "2026-10-14T20:37:17Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5852034135,
+    "title": "Add remote server: Jobbi Agent Gigs (https://jobbi.org/mcp)",
+    "url": "https://github.com/chatmcp/mcpso/issues/5392",
+    "repo": "chatmcp/mcpso",
+    "labels": [],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Algora / Web3",
+    "createdDate": "2026-10-14T17:01:48Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5834691880,
+    "title": "Add a \"Rate PlayTrace\" link to the Home screen",
+    "url": "https://github.com/MrValtancoli/PlayTrace-App/issues/61",
+    "repo": "MrValtancoli/PlayTrace-App",
+    "labels": [
+      "enhancement",
+      "good first issue"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T17:22:32Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5832039318,
+    "title": "PipelineBoard card links use aria-label, which hides the repo/issue reference from screen readers",
+    "url": "https://github.com/MergeFi/frontend/issues/694",
+    "repo": "MergeFi/frontend",
+    "labels": [
+      "good first issue",
+      "accessibility",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T14:22:19Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5832034258,
+    "title": "README's example user journey describes features the app doesn't have",
+    "url": "https://github.com/MergeFi/frontend/issues/690",
+    "repo": "MergeFi/frontend",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "100 USDC",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T14:22:00Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5831932044,
+    "title": "MaintenancePoolService.assignReward reports a stale balance in its 'exceeds pool balance' error",
+    "url": "https://github.com/MergeFi/backend/issues/608",
+    "repo": "MergeFi/backend",
+    "labels": [
+      "bug",
+      "good first issue",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T14:15:34Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5830810692,
+    "title": "EscrowService.poolWithdraw passes pool_id as a bare bigint (ScVal i128) — the contract declares u64",
+    "url": "https://github.com/MergeFi/backend/issues/522",
+    "repo": "MergeFi/backend",
+    "labels": [
+      "bug",
+      "good first issue",
+      "Stellar Wave"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T13:03:21Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5829818224,
+    "title": "configs: 30 shipped grpo/ipo/bco/reward_model/online_dpo configs leave gradient_checkpointing unset and now run without it (after #1778)",
+    "url": "https://github.com/MakazhanAlpamys/Soup/issues/1862",
+    "repo": "MakazhanAlpamys/Soup",
+    "labels": [
+      "bug",
+      "good first issue",
+      "claimed",
+      "difficulty:2"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "OpenSource / Tools",
+    "createdDate": "2026-10-13T11:54:09Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5547201500,
+    "title": "Plugin system: customs importers/exporters",
+    "url": "https://github.com/alecerca/repoDocs/issues/6",
+    "repo": "alecerca/repoDocs",
+    "labels": [
+      "funded",
+      "roadmap"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-23T00:52:58Z",
+    "state": "open",
+    "suitabilityScore": 70
+  },
+  {
+    "id": 5547197765,
+    "title": "GitHub integration: pull & push .md to a remote repo",
+    "url": "https://github.com/alecerca/repoDocs/issues/4",
+    "repo": "alecerca/repoDocs",
+    "labels": [
+      "funded",
+      "roadmap"
+    ],
+    "rewardEstimated": "Thỏa thuận / Theo task",
+    "languageMatch": "Funded Issues",
+    "createdDate": "2026-09-23T00:52:20Z",
+    "state": "open",
+    "suitabilityScore": 70
+  }
+]
