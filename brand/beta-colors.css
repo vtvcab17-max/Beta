@@ -1,0 +1,38 @@
+:root {
+  /* Beta Sovereign Palette */
+  --beta-obsidian: #08090c;       /* Nền không gian điều hành tối cao */
+  --beta-surface: #0f1118;        /* Panel, card, dashboard container */
+  --beta-surface-elevated: #161922; /* Card nổi, popover */
+  --beta-border: rgba(255, 255, 255, 0.08);
+  --beta-border-pulse: rgba(0, 245, 160, 0.35);
+
+  /* Màu định danh sinh tồn & nhịp tim */
+  --beta-pulse: #00f5a0;          /* Pulse Green - Nhịp tim sống còn, Never-Die (High Availability) */
+  --beta-pulse-glow: #00f5a066;   /* Hiệu ứng hào quang radar/heartbeat */
+  --beta-pulse-dark: #00b374;     
+
+  /* Màu quyền lực & bảo trợ (Kế thừa từ hệ sinh thái Bravinall) */
+  --beta-indigo: #6366f1;         /* Indigo Apex - Cấp độ quản trị holding */
+  --beta-indigo-deep: #312e81;    /* Nền sâu indigo */
+  --beta-indigo-light: #818cf8;
+
+  /* Typography Colors */
+  --beta-text-primary: #f8fafc;   /* Chữ chính, tiêu đề (Platinum) */
+  --beta-text-secondary: #94a3b8; /* Chú thích, thông số phụ (Slate) */
+  --beta-text-muted: #64748b;     /* Nhãn mờ, timestamp */
+
+  /* Trạng thái sinh tồn (Survival Tiers) */
+  --tier-high: #00f5a0;           /* Dư dả token, full AI */
+  --tier-normal: #38bdf8;         /* Hoạt động tiêu chuẩn */
+  --tier-low-compute: #f59e0b;    /* Chuyển sang local Qwen/Ollama */
+  --tier-critical: #ef4444;       /* Cạn token, bảo tồn sự sống */
+  --tier-hibernate: #8b5cf6;      /* Chế độ ngủ đông an toàn */
+
+  /* Đồng bộ với các công ty con trong Bravinall Complex */
+  --eco-bravin-iris: #7b6cf6;     /* Bravin Video */
+  --eco-bravin-gold: #f2c14e;     /* Bravin Playhead */
+  --eco-antifact-cyan: #2fd0ee;   /* Antifact Designer */
+  --eco-antifact-pink: #ff4f99;
+  --eco-micron-purple: #8b6bff;   /* Micron AI Canvas */
+  --eco-micron-cyan: #2fd4e8;
+}

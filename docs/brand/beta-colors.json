@@ -1,0 +1,53 @@
+{
+  "brand": "Beta Holding",
+  "version": "1.0.0",
+  "theme": "Sovereign Autonomous Core",
+  "colors": {
+    "pulse": {
+      "hex": "#00F5A0",
+      "rgb": "rgb(0, 245, 160)",
+      "meaning": "Nhịp tim sinh tồn, luật Không được chết (Never-Die), Uptime 24/7"
+    },
+    "indigo": {
+      "hex": "#6366F1",
+      "rgb": "rgb(99, 102, 241)",
+      "meaning": "Vị thế công ty tổng bảo trợ (Holding Apex), kế thừa dải màu Bravinall"
+    },
+    "obsidian": {
+      "hex": "#08090C",
+      "rgb": "rgb(8, 9, 12)",
+      "meaning": "Nền không gian điều hành trung tâm tối cao"
+    },
+    "surface": {
+      "hex": "#0F1118",
+      "rgb": "rgb(15, 17, 24)",
+      "meaning": "Panel bảng điều khiển và console tác tử AI"
+    },
+    "text": {
+      "primary": "#F8FAFC",
+      "secondary": "#94A3B8",
+      "muted": "#64748B"
+    },
+    "survivalTiers": {
+      "HIGH": "#00F5A0",
+      "NORMAL": "#38BDF8",
+      "LOW_COMPUTE": "#F59E0B",
+      "CRITICAL": "#EF4444",
+      "HIBERNATE": "#8B5CF6"
+    },
+    "subsidiaries": {
+      "bravin": {
+        "primary": "#7B6CF6",
+        "accent": "#F2C14E"
+      },
+      "antifact": {
+        "primary": "#2FD0EE",
+        "accent": "#FF4F99"
+      },
+      "micron": {
+        "primary": "#8B6BFF",
+        "accent": "#2FD4E8"
+      }
+    }
+  }
+}

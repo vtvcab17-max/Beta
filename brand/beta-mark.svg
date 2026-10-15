@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Beta Holding Mark">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08090C"/>
+      <stop offset="100%" stop-color="#121520"/>
+    </linearGradient>
+
+    <!-- Sovereign Indigo to Cobalt Gradient -->
+    <linearGradient id="betaSpine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+
+    <!-- Pulse Green Gradient -->
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F5A0"/>
+      <stop offset="100%" stop-color="#00D287"/>
+    </linearGradient>
+
+    <!-- Pulse Glow Filter -->
+    <filter id="pulseGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Core Loop Glow Filter -->
+    <filter id="loopGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Container Squircle (Đồng bộ tỷ lệ bo góc của Bravinall & Antifact) -->
+  <rect width="512" height="512" rx="116" fill="url(#bgGrad)"/>
+  <rect width="508" height="508" x="2" y="2" rx="114" fill="none" stroke="rgba(99, 102, 241, 0.22)" stroke-width="2"/>
+
+  <!-- Subtle Ambient Core Grid / Radar Accent -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="rgba(0, 245, 160, 0.05)" stroke-dasharray="6 8"/>
+  <circle cx="256" cy="256" r="110" fill="none" stroke="rgba(99, 102, 241, 0.06)" stroke-dasharray="4 6"/>
+
+  <g transform="translate(10, 0)">
+    <!-- BETA SYMBOL (β) - The Supreme Sovereign Construct -->
+    <!-- Left Vertical Anchor / Descender Line (Trụ cột tự trị) -->
+    <path d="M 170 380 L 170 148 C 170 134 181 124 195 124 C 209 124 220 134 220 148 L 220 380 C 220 394 209 405 195 405 C 181 405 170 394 170 380 Z" 
+          fill="url(#betaSpine)"/>
+
+    <!-- Upper Loop (Vòng điều hành cấp cao - Supreme Orchestration) -->
+    <path d="M 215 138 C 265 138 318 152 318 198 C 318 244 262 258 215 258" 
+          fill="none" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round"/>
+
+    <!-- Lower Loop (Vòng điều phối công ty con & dòng tiền - Survival & Ecosystem) -->
+    <path d="M 215 258 C 275 258 335 274 335 328 C 335 382 268 395 215 395" 
+          fill="none" stroke="url(#betaSpine)" stroke-width="32" stroke-linecap="round"/>
+
+    <!-- Inner Core Apex Node -->
+    <circle cx="215" cy="258" r="16" fill="#6366F1"/>
+
+    <!-- THE HEARTBEAT PULSE LINE (Luật Tối Thượng: KHÔNG ĐƯỢC CHẾT - Never Die) -->
+    <!-- Xung nhịp tim điện tử cắt ngang qua trung tâm lõi Beta -->
+    <path d="M 95 258 L 165 258 L 185 220 L 210 305 L 235 185 L 260 315 L 285 240 L 305 270 L 325 258 L 405 258" 
+          fill="none" stroke="url(#pulseGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"
+          filter="url(#pulseGlow)"/>
+
+    <!-- Pulse Peak Nodes -->
+    <circle cx="235" cy="185" r="7" fill="#00F5A0" filter="url(#pulseGlow)"/>
+    <circle cx="405" cy="258" r="6" fill="#00F5A0"/>
+  </g>
+</svg>
