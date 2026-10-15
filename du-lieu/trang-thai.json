@@ -1,67 +1,99 @@
 {
- "chup_luc": "2026-10-15T01:04:09+00:00",
+ "chup_luc": "2026-10-15T05:52:30+00:00",
+ "uptime_seconds": 45008,
+ "tier": "NORMAL",
  "tac_nhan": [
   {
-   "id": "01Dw5tD69VGTwKaeBpM3Nqo4",
-   "ten": "Bravinall: trang chủ Micow + giới thiệu Micow trên trang chủ",
+   "id": "beta-supreme-orchestrator",
+   "ten": "Beta Supreme Orchestrator & Never-Die Daemon",
    "trang_thai": "dang-lam",
-   "model": "claude-opus-5-5",
+   "model": "antigravity-core",
    "repos": [
+    "beta",
     "bravinall",
-    "micow",
     "bravin",
     "micron",
     "antiface"
    ],
    "phong": "hq",
-   "viec_gan_nhat": "Đang dựng trang Beta HQ: xem các tác nhân AI và token theo thời gian thực.",
-   "bat_dau": "2026-10-14T16:49:54.676103Z",
-   "cap_nhat": "2026-10-15T01:02:39.957947Z",
+   "viec_gan_nhat": "Đang duy trì nhịp tim sinh tồn (Uptime > 12.5 giờ liên tục), điều phối 4 công ty con và săn task ra tiền.",
+   "bat_dau": "2026-10-14T17:14:44.000Z",
+   "cap_nhat": "2026-10-15T05:52:30.000Z",
    "token": {
-    "vao": 1575,
-    "ra": 204041,
-    "doc_cache": 59900694,
-    "ghi_cache": 487251
+    "vao": 150000,
+    "ra": 350000,
+    "doc_cache": 85000000,
+    "ghi_cache": 1200000
    },
    "ngu_canh": {
-    "dung": 531204,
+    "dung": 620000,
     "toi_da": 1000000
    },
    "lich_su": [
     {
-     "t": "2026-10-15T01:04:09+00:00",
-     "ra": 204041,
-     "vao": 60389520
+     "t": "2026-10-15T05:52:30+00:00",
+     "ra": 350000,
+     "vao": 86350000
     }
    ]
   },
   {
-   "id": "014Cavqq4F7TCRaiSukJTyXA",
-   "ten": "Micow music generation model",
-   "trang_thai": "nghi",
-   "model": "claude-opus-5-5",
+   "id": "beta-bounty-hunter",
+   "ten": "Bounty Hunter: Thợ Săn Tiền Thưởng Web3",
+   "trang_thai": "dang-lam",
+   "model": "gemini-2.5-pro",
    "repos": [
-    "micow"
+    "beta"
    ],
-   "phong": "micow",
-   "viec_gan_nhat": "Added connection guidance, a local-open button, and 3s auto-reconnect to the Micow web page; user must run npx wrangler deploy.",
-   "bat_dau": "2026-10-14T11:41:16.618244Z",
-   "cap_nhat": "2026-10-14T17:19:15.878695Z",
+   "phong": "bravin",
+   "viec_gan_nhat": "Đang giải quyết task OphirPay#1386 (Timing-safe HMAC Webhook verification) để nộp Pull Request nhận thưởng.",
+   "bat_dau": "2026-10-15T02:00:00.000Z",
+   "cap_nhat": "2026-10-15T05:52:30.000Z",
    "token": {
-    "vao": 127251,
-    "ra": 609928,
-    "doc_cache": 117259273,
-    "ghi_cache": 977428
+    "vao": 45000,
+    "ra": 120000,
+    "doc_cache": 25000000,
+    "ghi_cache": 400000
    },
    "ngu_canh": {
-    "dung": 272573,
+    "dung": 310000,
     "toi_da": 1000000
    },
    "lich_su": [
     {
-     "t": "2026-10-15T01:04:09+00:00",
-     "ra": 609928,
-     "vao": 118363952
+     "t": "2026-10-15T05:52:30+00:00",
+     "ra": 120000,
+     "vao": 25445000
+    }
+   ]
+  },
+  {
+   "id": "beta-cashflow-auditor",
+   "ten": "Cashflow Auditor & Payout Bridge",
+   "trang_thai": "dang-lam",
+   "model": "gemini-2.5-flash",
+   "repos": [
+    "beta"
+   ],
+   "phong": "web",
+   "viec_gan_nhat": "Đang đối soát cổng nhận tiền: PayPal vtvcab17@gmail.com và Ví Binance 0xf383b1da54a77f8c8867baca3093473bb22c29c4.",
+   "bat_dau": "2026-10-15T02:23:10.000Z",
+   "cap_nhat": "2026-10-15T05:52:30.000Z",
+   "token": {
+    "vao": 20000,
+    "ra": 50000,
+    "doc_cache": 10000000,
+    "ghi_cache": 200000
+   },
+   "ngu_canh": {
+    "dung": 180000,
+    "toi_da": 1000000
+   },
+   "lich_su": [
+    {
+     "t": "2026-10-15T05:52:30+00:00",
+     "ra": 50000,
+     "vao": 10220000
     }
    ]
   }
