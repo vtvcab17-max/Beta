@@ -152,7 +152,7 @@ a{color:var(--primary)}
     <section class="card">
       <h2>Văn phòng <span id="mapNote">Chạm vào nhân vật để xem đang làm gì</span></h2>
       <div class="mapscroll"><div class="map" id="map"></div></div>
-      <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
+      <div class="legend"><span><span class="ms">smart_toy</span>Tác nhân AI</span><span><span class="ms">person</span>Con người</span><span><span class="ms">hub</span>Tác nhân khác: commit có dòng <code>Agent: Tên</code></span><span><span class="ms">auto_awesome</span>Phòng sáng: vừa có code mới</span><span><span class="ms">toll</span>Xu bay: token tăng thật</span><span class="drag"><span class="ms">swipe</span>Kéo ngang để xem hết</span></div>
     </section>
     <div class="stack">
       <section class="card"><h2>Tác nhân AI <span id="snap">–</span></h2><div class="agents" id="agents"><p class="empty">Đang tải…</p></div></section>
@@ -288,13 +288,22 @@ async function commitInfo(repo, sha) {
 }
 const sessionOf = msg => { const m = /Claude-Session:\s*\S*session_([A-Za-z0-9]+)/.exec(msg || ""); return m ? m[1] : null; };
 const isClaude = msg => /Co-Authored-By:\s*Claude/i.test(msg || "") || !!sessionOf(msg);
+// tác nhân khác (Antigravity, Paperclip…): commit có dòng "Agent: <tên>" hoặc "Co-Authored-By: Antigravity"
+const AGENT_COLORS = { antigravity: "#4285f4", paperclip: "#fa7b17", gemini: "#1a73e8", codex: "#10a37f" };
+function otherAgent(msg) {
+  const m = /^Agent:\s*(.+)$/im.exec(msg || "") || /Co-Authored-By:\s*(Antigravity|Gemini|Paperclip|Codex)\b/i.exec(msg || "");
+  return m ? m[1].trim().slice(0, 24) : null;
+}
 function who(msg) {
+  const other = otherAgent(msg);
+  if (other) { const key = other.toLowerCase(); return { id: "a:" + key, label: other, color: AGENT_COLORS[key.split(" ")[0]] || "#24c1e0" }; }
   const sid = sessionOf(msg);
   if (sid && sessionIdx[sid] != null) return { id: "s:" + sid, label: "AI-" + (sessionIdx[sid] + 1) };
   if (isClaude(msg)) return { id: "claude", label: "Claude" };
   return { id: "human", label: "Hà" };
 }
 function ensureActor(w) {
+  if (w.id.startsWith("a:")) return actor(w.id, w.label, w.color, false);
   if (w.id === "human") return actor("human", "Hà", "#fbbc04", true);
   if (w.id === "claude") return actor("claude", "Claude", "#d97757", false);
   return actors[w.id];
