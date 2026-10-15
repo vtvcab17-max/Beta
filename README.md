@@ -33,6 +33,8 @@ Tệp chỉ giữ những gì trang cần: tên việc, trạng thái, model, re
 
 GitHub → repo **Beta** → **Settings → Pages** → *Source*: **Deploy from a branch**, nhánh `main`, thư mục `/ (root)` → **Save**. Sau khoảng 1 phút trang có ở `https://vtvcab17-max.github.io/Beta/`.
 
+**Hoặc trên Cloudflare Workers** (giống Bravinall): `wrangler.jsonc` đã có sẵn, phát thư mục gốc, bỏ qua các tệp trong `.assetsignore`. Cloudflare → **Workers & Pages → Create → Import a repository** → chọn repo `Beta` → Deploy command `npx wrangler deploy` → **Deploy**. Trang ở `https://beta-hq.vtvcab17.workers.dev`, tự cập nhật mỗi khi đẩy lên `main`.
+
 Chạy thử trên máy: `python3 -m http.server 8080` rồi mở `http://localhost:8080`.
 
 ## Giới hạn
