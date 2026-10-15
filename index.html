@@ -219,10 +219,24 @@ function roomOf(repo, when) {
   return k;
 }
 // dựng tầng 2 từ danh sách repo (không giới hạn thời gian như sự kiện GitHub)
+// Gọi GitHub tiết kiệm: người xem chưa đăng nhập chỉ có 60 lượt/giờ. Lượt phụ (đọc commit) tự dừng khi còn ít lượt.
+let rateLeft = 60, rateReset = 0;
+async function gh(url, optional, extraHeaders) {
+  if (optional && rateLeft <= 6) return null;
+  if (Date.now() < rateReset && rateLeft <= 0) return { ok: false, limited: true, wait: Math.round((rateReset - Date.now()) / 1000) };
+  let r;
+  try { r = await fetch(url, { headers: Object.assign({ Accept: "application/vnd.github+json" }, extraHeaders || {}) }); }
+  catch { return null; }
+  const left = r.headers.get("X-RateLimit-Remaining"), reset = r.headers.get("X-RateLimit-Reset");
+  if (left != null) rateLeft = +left; if (reset) rateReset = +reset * 1000;
+  if (r.status === 403 || r.status === 429) { rateLeft = 0; const wait = rateReset ? Math.max(60, Math.round((rateReset - Date.now()) / 1000)) : 300; return { ok: false, limited: true, wait, status: r.status }; }
+  return { ok: r.ok, status: r.status, headers: r.headers, json: r.ok ? await r.json() : null };
+}
 async function loadRepos() {
-  let list;
-  try { const r = await fetch(`https://api.github.com/users/${OWNER}/repos?per_page=100&sort=pushed`, { headers: { Accept: "application/vnd.github+json" } }); if (!r.ok) return; list = await r.json(); }
-  catch { return; }
+  let list = null;
+  const r = await gh(`https://api.github.com/users/${OWNER}/repos?per_page=100&sort=pushed`);
+  if (r && r.ok) { list = r.json; store.set("beta-hq-repos", list.map(x => ({ name: x.name, full_name: x.full_name, private: x.private, pushed_at: x.pushed_at }))); }
+  else { list = store.get("beta-hq-repos", null); if (r && r.limited) setTimeout(loadRepos, r.wait * 1000 + 2000); if (!list) return; }
   const extra = list.filter(r => !r.private && !REPO_ROOM[r.name.toLowerCase()]);
   const pin = extra.filter(r => PINNED[r.name.toLowerCase()]), other = extra.filter(r => !PINNED[r.name.toLowerCase()]);
   const top = pin.concat(other.slice(0, 5 - pin.length)), rest = other.slice(5 - pin.length);
@@ -230,8 +244,8 @@ async function loadRepos() {
     const k = roomOf(r.full_name, r.pushed_at); if (k === "san2") continue;
     const key = "beta-hq-last:" + r.full_name + "@" + r.pushed_at; let msg = store.get(key, null);
     if (msg == null) {
-      try { const c = await fetch(`https://api.github.com/repos/${r.full_name}/commits?per_page=1`, { headers: { Accept: "application/vnd.github+json" } }); if (c.ok) { const j = await c.json(); msg = (j[0] && j[0].commit && j[0].commit.message) || ""; store.set(key, msg); } }
-      catch {}
+      const c = await gh(`https://api.github.com/repos/${r.full_name}/commits?per_page=1`, true);
+      if (c && c.ok) { const j = c.json; msg = (j[0] && j[0].commit && j[0].commit.message) || ""; store.set(key, msg); }
     }
     if (!msg) continue;
     const w = who(msg); if (w.id.startsWith("s:")) continue; // phiên Claude: vị trí lấy theo ảnh chụp và sự kiện
@@ -339,16 +353,20 @@ async function loadAgents() {
 }
 
 // ---------- GitHub: sự kiện thật ----------
-let etag = null, seen = new Set(store.get("beta-hq-seen", [])), firstLoad = true, nextAt = 0;
+let etag = null, seen = new Set(store.get("beta-hq-seen", [])), firstLoad = true, nextAt = 0, showingCache = false;
 const commitCache = store.get("beta-hq-commits", {});
 const ICON = { PushEvent: "upload", CreateEvent: "add_circle", DeleteEvent: "delete", PullRequestEvent: "merge", IssuesEvent: "task_alt", IssueCommentEvent: "chat", ReleaseEvent: "rocket_launch", WatchEvent: "star", ForkEvent: "fork_right", PublicEvent: "public" };
+let fetchedRepos = new Set(), repoBudget = 4;
 async function commitInfo(repo, sha) {
   if (commitCache[sha]) return commitCache[sha];
-  try {
-    const r = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, { headers: { Accept: "application/vnd.github+json" } });
-    if (!r.ok) return null; const j = await r.json(); const msg = (j.commit && j.commit.message) || "";
-    commitCache[sha] = { msg, n: 1 }; store.set("beta-hq-commits", commitCache); return commitCache[sha];
-  } catch { return null; }
+  if (fetchedRepos.has(repo) || repoBudget <= 0) return null;
+  fetchedRepos.add(repo); repoBudget--;
+  const r = await gh(`https://api.github.com/repos/${repo}/commits?per_page=50`, true); // một lượt = 50 commit gần nhất của repo
+  if (!r || !r.ok) return null;
+  for (const c of r.json) commitCache[c.sha] = { msg: (c.commit && c.commit.message) || "" };
+  const keys = Object.keys(commitCache); if (keys.length > 600) for (const k of keys.slice(0, keys.length - 600)) delete commitCache[k];
+  store.set("beta-hq-commits", commitCache);
+  return commitCache[sha] || null;
 }
 const sessionOf = msg => { const m = /Claude-Session:\s*\S*session_([A-Za-z0-9]+)/.exec(msg || ""); return m ? m[1] : null; };
 const isClaude = msg => /Co-Authored-By:\s*Claude/i.test(msg || "") || !!sessionOf(msg);
@@ -400,20 +418,32 @@ function logRow(e, d, w, isNew) {
   return row;
 }
 async function poll() {
-  const headers = { Accept: "application/vnd.github+json" }; if (etag) headers["If-None-Match"] = etag;
-  let r;
-  try { r = await fetch(`https://api.github.com/users/${OWNER}/events/public?per_page=60`, { headers }); }
-  catch { setLive(false, "Mất kết nối GitHub, thử lại sau"); return schedule(60); }
-  const wait = Math.max(60, +(r.headers.get("X-Poll-Interval") || 60));
-  if (r.status === 304) { setLive(true); return schedule(wait); }
-  if (r.status === 403 || r.status === 429) {
-    const reset = +(r.headers.get("X-RateLimit-Reset") || 0) * 1000, s = reset ? Math.max(60, Math.round((reset - Date.now()) / 1000)) : 300;
-    setLive(false, "GitHub tạm giới hạn lượt hỏi, thử lại sau " + Math.ceil(s / 60) + " phút"); return schedule(s);
+  fetchedRepos = new Set(); repoBudget = 4;
+  const r = await gh(`https://api.github.com/users/${OWNER}/events/public?per_page=60`, false, etag ? { "If-None-Match": etag } : null);
+  if (!r) { setLive(false, "Mất kết nối GitHub, thử lại sau"); if (firstLoad) await renderEvents(store.get("beta-hq-events", null), true); return schedule(60); }
+  if (r.limited) {
+    const at = new Date(Date.now() + r.wait * 1000).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Ho_Chi_Minh" });
+    setLive(false, "GitHub tạm giới hạn, hỏi lại lúc " + at);
+    if (firstLoad) {
+      const cached = store.get("beta-hq-events", null);
+      if (cached) await renderEvents(cached, true);
+      else { const log = $("log"); log.textContent = ""; log.append(el("p", "empty", "GitHub cho mỗi người xem chưa đăng nhập 60 lượt hỏi mỗi giờ, và lượt của bạn vừa hết. Trang tự đọc lại lúc " + at + ".")); }
+    }
+    return schedule(r.wait + 2);
   }
+  const wait = Math.max(60, +((r.headers && r.headers.get("X-Poll-Interval")) || 60));
+  if (r.status === 304) { setLive(true); return schedule(wait); }
   if (!r.ok) { setLive(false, "GitHub trả lỗi " + r.status); return schedule(120); }
-  etag = r.headers.get("ETag"); const events = await r.json(); setLive(true);
-  const log = $("log");
-  if (firstLoad) log.textContent = "";
+  etag = r.headers.get("ETag"); setLive(true);
+  store.set("beta-hq-events", { t: Date.now(), events: r.json });
+  if (showingCache) { firstLoad = true; showingCache = false; }
+  await renderEvents({ events: r.json }, false);
+  schedule(wait);
+}
+async function renderEvents(data, fromCache) {
+  if (!data || !data.events) return;
+  const events = data.events, log = $("log"); if (fromCache) showingCache = true;
+  if (firstLoad) { log.textContent = ""; if (fromCache) log.append(el("p", "empty", "Đang hiện dữ liệu lưu lúc " + new Date(data.t).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" }) + " (GitHub tạm chưa cho đọc).")); }
   const fresh = events.filter(e => !seen.has(e.id));
   const todayKey = new Date().toDateString(); let today = 0;
   events.forEach(e => { if (new Date(e.created_at).toDateString() === todayKey) today++; });
@@ -422,21 +452,20 @@ async function poll() {
   const list = firstLoad ? events.slice().reverse() : fresh.slice().reverse();
   for (const e of list) {
     const d = await describe(e);
-    const w = e.type === "PushEvent" ? who(d.full) : null;
+    const w = e.type === "PushEvent" && d.full ? who(d.full) : null;
     const row = logRow(e, d, w, !firstLoad);
-    log.prepend(row);
-    // đếm cấp phòng theo số commit
+    if (fromCache && log.firstChild && log.firstChild.classList.contains("empty")) log.firstChild.after(row); else log.prepend(row);
     const rr = roomEls[d.room]; if (rr && e.type === "PushEvent") { rr.n += d.n || 1; HQ.setRoomInfo(d.room, "LV " + (1 + Math.floor(Math.sqrt(rr.n))), ROOMS[d.room].sub + " · " + rr.n + " commit · " + ago(e.created_at) + " trước"); }
     if (w && e.type === "PushEvent") {
       const o = ensureActor(w);
       if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!w.id.startsWith("s:")) setSleep(w.id, (Date.now() - new Date(e.created_at)) / 864e5 >= 1); if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
     } else if (!firstLoad) pulse(d.room, d.newRoom ? "Phòng mới" : e.type === "WatchEvent" ? "+1 sao" : "Mới");
-    seen.add(e.id);
+    if (!fromCache) seen.add(e.id);
   }
   while (log.children.length > 80) log.lastChild.remove();
   store.set("beta-hq-seen", [...seen].slice(-300));
   if (!log.children.length) log.append(el("p", "empty", "Chưa có sự kiện công khai nào gần đây."));
-  firstLoad = false; schedule(wait);
+  firstLoad = false;
 }
 function setLive(ok, msg) { $("live").classList.toggle("warn", !ok); if (msg) $("poll").textContent = msg; }
 function schedule(s) { nextAt = Date.now() + s * 1000; setTimeout(poll, s * 1000); }

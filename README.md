@@ -41,7 +41,7 @@ Chạy thử trên máy: `python3 -m http.server 8080` rồi mở `http://localh
 
 ## Giới hạn
 
-- GitHub cho mỗi người xem 60 lượt hỏi API mỗi giờ khi chưa đăng nhập. Trang hỏi 1 lần mỗi phút và dùng ETag (lượt "không có gì mới" không bị tính), nên thường không chạm giới hạn. Nếu chạm, trang báo và tự đợi.
+- GitHub cho mỗi người xem 60 lượt hỏi API mỗi giờ khi chưa đăng nhập. Mở trang tốn khoảng 8 lượt (commit đọc theo loạt 50 cái mỗi repo, có lưu lại), sau đó 1 lượt mỗi phút và dùng ETag (lượt "không có gì mới" không bị tính). Nếu chạm giới hạn, trang hiện dữ liệu lưu lần trước, báo giờ GitHub cho đọc lại và tự đợi.
 - Chỉ thấy repo **công khai**.
 - Sự kiện GitHub có thể trễ vài phút so với lúc đẩy code.
 
