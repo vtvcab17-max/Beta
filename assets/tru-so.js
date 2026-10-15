@@ -23,6 +23,7 @@
   let cv, ctx, ov, K = 3, rooms = {}, actors = {}, deco = [], last = 0, t = 0, floorNow = 1;
   const activity = { 1: 0, 2: 0 };
   const onFloor = R => R.floor === floorNow;
+  const col = R => R.old ? mix(R.c, "#9aa0a6", .72) : R.c;
 
   const rgb = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
   const mix = (a, b, k) => { const A = rgb(a), B = rgb(b); return `rgb(${A.map((v, i) => Math.round(v * (1 - k) + B[i] * k)).join(",")})`; };
@@ -125,7 +126,7 @@
       ctx.restore();
     }
     for (const R of Object.values(rooms).filter(onFloor)) {
-      poly([P(R.x0, R.y0), P(R.x0 + RS, R.y0), P(R.x0 + RS, R.y0 + RS), P(R.x0, R.y0 + RS)], mix(T === THEMES.dark ? "#211f26" : "#ffffff", R.c, T.floorMix));
+      poly([P(R.x0, R.y0), P(R.x0 + RS, R.y0), P(R.x0 + RS, R.y0 + RS), P(R.x0, R.y0 + RS)], mix(T === THEMES.dark ? "#211f26" : "#ffffff", col(R), T.floorMix));
       ctx.strokeStyle = T.grid; ctx.lineWidth = .5; ctx.beginPath();
       for (let i = 1; i < RS; i++) { let a = P(R.x0 + i, R.y0), b = P(R.x0 + i, R.y0 + RS); ctx.moveTo(...a); ctx.lineTo(...b); a = P(R.x0, R.y0 + i); b = P(R.x0 + RS, R.y0 + i); ctx.moveTo(...a); ctx.lineTo(...b); }
       ctx.stroke();
@@ -138,7 +139,7 @@
       poly([a, c, up(c, WALL), up(a, WALL)], T.wallL);
       poly([c, b, up(b, WALL), up(c, WALL)], T.wallR);
       // sọc màu trên đỉnh tường (dấu hiệu phòng)
-      ctx.lineCap = "round"; ctx.strokeStyle = R.c; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(...up(a, WALL)); ctx.lineTo(...up(c, WALL)); ctx.lineTo(...up(b, WALL)); ctx.stroke();
+      ctx.lineCap = "round"; ctx.strokeStyle = col(R); ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(...up(a, WALL)); ctx.lineTo(...up(c, WALL)); ctx.lineTo(...up(b, WALL)); ctx.stroke();
       ctx.strokeStyle = T.wallEdge; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(...c); ctx.lineTo(...up(c, WALL)); ctx.stroke();
       for (const wx of [R.x0 + 1.2, R.x0 + 4.6]) { // cửa sổ
         const p1 = P(wx, R.y0), p2 = P(wx + 1.3, R.y0);
@@ -251,6 +252,13 @@
     get floor() { return floorNow; },
     get activity() { return activity; },
     hasRoom(k) { return !!rooms[k]; },
+    setRoomOld(k, days) { const R = rooms[k]; if (!R) return; R.old = days > 0; R.lab.classList.toggle("old", R.old); },
+    removeRoom(k) { // nhường chỗ ở tầng 2 cho repo mới hơn; ai đang ở đó ra sảnh
+      const R = rooms[k]; if (!R || R.floor !== 2 || R.k === LOBBY[2]) return false;
+      R.lab.remove(); delete rooms[k];
+      for (const a of Object.values(actors)) if (a.room === k) { a.room = LOBBY[2]; a.path = a.floor === 2 ? [rooms[LOBBY[2]].seats[2]] : []; }
+      return true;
+    },
     roomFloor(k) { return rooms[k] ? rooms[k].floor : null; },
     addRoom(k, def) { // phòng mới ở tầng 2 (tối đa 5 phòng + sảnh)
       if (rooms[k]) return true;
@@ -266,6 +274,11 @@
       lab.append(bub, nm); ov.append(lab);
       const start = rooms.hq.seats[Object.keys(actors).length % 4];
       return actors[id] = { id, label, color, human, x: start[0], y: start[1], floor: 1, path: [], room: null, lab, bub, task: "", working: false, sleep: false, el: lab };
+    },
+    place(id, roomKey) { // đặt thẳng vào phòng (vị trí ban đầu khi mở trang), không đi bộ
+      const a = actors[id], R = rooms[roomKey]; if (!a || !R) return;
+      const seat = R.seats[Object.values(actors).filter(o => o !== a && o.room === roomKey).length % R.seats.length];
+      a.floor = R.floor; a.room = roomKey; a.path = []; a.x = seat[0]; a.y = seat[1];
     },
     moveTo(id, roomKey) { const a = actors[id]; if (!a || !rooms[roomKey]) return; if (a.room === roomKey && a.path.length) return; a.path = route(a, roomKey); a.room = roomKey; if (rooms[roomKey].floor !== floorNow) activity[rooms[roomKey].floor]++; },
     say(id, text, ms = 5000) { const a = actors[id]; if (!a) return; a.bub.textContent = text; a.lab.classList.add("say"); clearTimeout(a.tm); a.tm = setTimeout(() => a.lab.classList.remove("say"), ms); },

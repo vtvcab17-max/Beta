@@ -37,5 +37,6 @@ Chỉ cần gõ:
 
 - **Repo phải công khai.** Văn phòng chỉ đọc được hoạt động công khai trên GitHub.
 - Đẩy vào repo đã có của tầng 1 (Micow, Bravin, Micron, Antiface, Bravinall, Beta) thì Antigravity đi vào phòng tương ứng ở tầng 1.
-- Tầng 2 có 5 chỗ. Khi đủ 5 phòng, repo mới tiếp theo sẽ hiện ở Sảnh tầng 2.
+- **Repo cũ không mất.** Tầng 2 dựng từ danh sách repo của GitHub, không phụ thuộc sự kiện gần đây, nên repo Antigravity đẩy lên từ nhiều tuần trước vẫn còn phòng. Phòng lâu không có code mới ngả xám, ghi "nghỉ N ngày", nhân vật trong đó ngủ.
+- Tầng 2 có 5 chỗ cho 5 repo được đẩy code gần nhất. Repo cũ hơn được ghi ở biển Sảnh tầng 2 ("+N repo khác"); khi có code mới, nó tự đổi chỗ với phòng nghỉ lâu nhất.
 - Tác nhân khác cũng dùng được cách này: đổi dòng cuối thành `Agent: Paperclip`, `Agent: Codex`…

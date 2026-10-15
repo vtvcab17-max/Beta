@@ -86,6 +86,8 @@ a{color:var(--primary)}
 .hq-sign::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}
 .hq-sign .lv{font:500 11px/1 var(--font);padding:3px 6px;border-radius:6px;background:var(--s-high);color:var(--on-surface-var)}
 .hq-sign .lv:empty{display:none}
+.hq-sign.old{opacity:.72}
+.hq-sign.old::before{background:#9aa0a6}
 .hq-name{position:absolute;transform:translate(-50%,6px);font:500 11px/1 var(--font);background:var(--s-lowest);color:var(--on-surface);padding:4px 8px;border-radius:99px;box-shadow:var(--e1);white-space:nowrap}
 .hq-name.human{background:var(--tertiary-container);color:var(--on-tertiary-container)}
 .hq-bub{position:absolute;bottom:calc(100% + clamp(44px,5.6vw,72px));left:50%;transform:translateX(-50%) scale(.9);width:max-content;max-width:240px;white-space:normal;font:400 13px/18px var(--font);background:var(--on-surface);color:var(--surface);padding:8px 12px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s}
@@ -193,12 +195,47 @@ if (matchMedia("(max-width:560px)").matches) for (const [k, [x, y]] of Object.en
 const REPO_ROOM = { micow: "micow", bravin: "bravin", micron: "micron", antiface: "antifact", bravinall: "web", beta: "hq" };
 const NEW_COLORS = ["#24c1e0", "#f538a0", "#fa7b17", "#9334e6", "#1e8e3e"];
 // repo quen thuộc ở tầng 1; repo mới (ví dụ Antigravity vừa tạo) tự thành một phòng ở tầng 2
-function roomOf(repo) {
+// tầng 2 giữ 5 repo đẩy code gần nhất; repo mới hơn thì đổi chỗ với phòng cũ nhất
+const f2Pushed = {}, f2Rest = [];
+const lobbyInfo = () => HQ.setRoomInfo("san2", f2Rest.length ? "+" + f2Rest.length + " repo khác" : "", f2Rest.length ? "Repo cũ hơn (sẽ có phòng khi có code mới): " + f2Rest.join(", ") : "thang máy · xưởng của các tác nhân");
+function roomOf(repo, when) {
   const name = (repo || "").split("/").pop(), low = name.toLowerCase();
   if (REPO_ROOM[low]) return REPO_ROOM[low];
-  const k = "r:" + low, hash = [...low].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
-  if (HQ.addRoom(k, { name, sub: "repo " + name + " · tầng 2", c: NEW_COLORS[hash % NEW_COLORS.length] })) return k;
-  return "san2";
+  const k = "r:" + low, ts = when ? +new Date(when) : Date.now(), hash = [...low].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  const def = { name, sub: "repo " + name + " · tầng 2", c: NEW_COLORS[hash % NEW_COLORS.length] };
+  if (!HQ.hasRoom(k) && !HQ.addRoom(k, def)) {
+    const oldest = Object.entries(f2Pushed).filter(([r]) => HQ.hasRoom(r)).sort((a, b) => a[1] - b[1])[0];
+    if (!oldest || oldest[1] >= ts) return "san2";
+    HQ.removeRoom(oldest[0]); delete f2Pushed[oldest[0]]; f2Rest.unshift(oldest[0].slice(2)); lobbyInfo();
+    if (!HQ.addRoom(k, def)) return "san2";
+  }
+  { const i = f2Rest.indexOf(low); if (i >= 0) { f2Rest.splice(i, 1); lobbyInfo(); } }
+  f2Pushed[k] = Math.max(f2Pushed[k] || 0, ts);
+  const days = (Date.now() - f2Pushed[k]) / 864e5;
+  HQ.setRoomOld(k, days >= 7 ? Math.floor(days) : 0);
+  HQ.setRoomInfo(k, days >= 7 ? "nghỉ " + Math.floor(days) + " ngày" : "", def.sub + " · đẩy lần cuối " + ago(new Date(f2Pushed[k]).toISOString()) + " trước");
+  return k;
+}
+// dựng tầng 2 từ danh sách repo (không giới hạn thời gian như sự kiện GitHub)
+async function loadRepos() {
+  let list;
+  try { const r = await fetch(`https://api.github.com/users/${OWNER}/repos?per_page=100&sort=pushed`, { headers: { Accept: "application/vnd.github+json" } }); if (!r.ok) return; list = await r.json(); }
+  catch { return; }
+  const extra = list.filter(r => !r.private && !REPO_ROOM[r.name.toLowerCase()]);
+  const top = extra.slice(0, 5), rest = extra.slice(5);
+  for (const r of top.slice().reverse()) {
+    const k = roomOf(r.full_name, r.pushed_at); if (k === "san2") continue;
+    const key = "beta-hq-last:" + r.full_name + "@" + r.pushed_at; let msg = store.get(key, null);
+    if (msg == null) {
+      try { const c = await fetch(`https://api.github.com/repos/${r.full_name}/commits?per_page=1`, { headers: { Accept: "application/vnd.github+json" } }); if (c.ok) { const j = await c.json(); msg = (j[0] && j[0].commit && j[0].commit.message) || ""; store.set(key, msg); } }
+      catch {}
+    }
+    if (!msg) continue;
+    const w = who(msg); if (w.id.startsWith("s:")) continue; // phiên Claude: vị trí lấy theo ảnh chụp và sự kiện
+    const o = ensureActor(w); if (!o || o.moved) continue;
+    o.moved = true; o.task = msg.split("\n")[0]; HQ.place(w.id, k); setSleep(w.id, (Date.now() - new Date(r.pushed_at)) / 864e5 >= 1);
+  }
+  f2Rest.splice(0, f2Rest.length, ...rest.map(r => r.name.toLowerCase())); lobbyInfo();
 }
 const COLORS = ["#4285f4", "#a142f4", "#ea4335", "#34a853", "#fa7b17", "#24c1e0"];
 const $ = id => document.getElementById(id);
@@ -264,7 +301,7 @@ function renderAgents(data) {
     const color = COLORS[i % COLORS.length], label = "AI-" + (i + 1);
     const o = actor("s:" + a.id, label, color, false);
     o.task = a.viec_gan_nhat || a.ten; o.working = a.trang_thai === "dang-lam";
-    if (!o.room || !o.moved) moveTo("s:" + a.id, a.phong || "hq");
+    if (!o.room) HQ.place("s:" + a.id, a.phong || "hq"); else if (!o.moved) moveTo("s:" + a.id, a.phong || "hq");
     setSleep("s:" + a.id, !o.working);
     const t = a.token || {}, tin = (t.vao || 0) + (t.doc_cache || 0) + (t.ghi_cache || 0);
     out += t.ra || 0; inn += tin; if (o.working) work++;
@@ -339,16 +376,16 @@ async function describe(e) {
     let msg = p.commits && p.commits.length ? p.commits[p.commits.length - 1].message : null;
     if (msg == null && p.head) { const ci = await commitInfo(repo, p.head); msg = ci ? ci.msg : ""; }
     const n = p.size || (p.commits ? p.commits.length : 1) || 1;
-    return { text: `đẩy ${n} commit lên ${short}/${branch}`, msg: (msg || "").split("\n")[0], full: msg || "", room: roomOf(repo), n };
+    return { text: `đẩy ${n} commit lên ${short}/${branch}`, msg: (msg || "").split("\n")[0], full: msg || "", room: roomOf(repo, e.created_at), n };
   }
-  if (e.type === "CreateEvent") return { text: p.ref_type === "repository" ? `tạo repo ${short} (phòng mới ở tầng 2)` : `tạo nhánh ${p.ref} ở ${short}`, room: roomOf(repo), newRoom: p.ref_type === "repository" };
-  if (e.type === "DeleteEvent") return { text: `xoá nhánh ${p.ref} ở ${short}`, room: roomOf(repo) };
-  if (e.type === "PullRequestEvent") return { text: `${p.action === "closed" && p.pull_request && p.pull_request.merged ? "gộp" : p.action === "opened" ? "mở" : p.action} PR #${p.number} ở ${short}`, msg: p.pull_request && p.pull_request.title, room: roomOf(repo) };
-  if (e.type === "ReleaseEvent") return { text: `phát hành ${(p.release && p.release.tag_name) || ""} cho ${short}`, room: roomOf(repo) };
-  if (e.type === "WatchEvent") return { text: `có người đánh sao ${short}`, room: roomOf(repo), ext: e.actor && e.actor.login };
-  if (e.type === "ForkEvent") return { text: `có người fork ${short}`, room: roomOf(repo), ext: e.actor && e.actor.login };
-  if (e.type === "IssuesEvent") return { text: `${p.action} issue ở ${short}`, msg: p.issue && p.issue.title, room: roomOf(repo) };
-  return { text: `${e.type.replace("Event", "")} ở ${short}`, room: roomOf(repo) };
+  if (e.type === "CreateEvent") return { text: p.ref_type === "repository" ? `tạo repo ${short} (phòng mới ở tầng 2)` : `tạo nhánh ${p.ref} ở ${short}`, room: roomOf(repo, e.created_at), newRoom: p.ref_type === "repository" };
+  if (e.type === "DeleteEvent") return { text: `xoá nhánh ${p.ref} ở ${short}`, room: roomOf(repo, e.created_at) };
+  if (e.type === "PullRequestEvent") return { text: `${p.action === "closed" && p.pull_request && p.pull_request.merged ? "gộp" : p.action === "opened" ? "mở" : p.action} PR #${p.number} ở ${short}`, msg: p.pull_request && p.pull_request.title, room: roomOf(repo, e.created_at) };
+  if (e.type === "ReleaseEvent") return { text: `phát hành ${(p.release && p.release.tag_name) || ""} cho ${short}`, room: roomOf(repo, e.created_at) };
+  if (e.type === "WatchEvent") return { text: `có người đánh sao ${short}`, room: roomOf(repo, e.created_at), ext: e.actor && e.actor.login };
+  if (e.type === "ForkEvent") return { text: `có người fork ${short}`, room: roomOf(repo, e.created_at), ext: e.actor && e.actor.login };
+  if (e.type === "IssuesEvent") return { text: `${p.action} issue ở ${short}`, msg: p.issue && p.issue.title, room: roomOf(repo, e.created_at) };
+  return { text: `${e.type.replace("Event", "")} ở ${short}`, room: roomOf(repo, e.created_at) };
 }
 function logRow(e, d, w, isNew) {
   const row = el("div", "ev" + (isNew ? " new" : ""));
@@ -389,7 +426,7 @@ async function poll() {
     const rr = roomEls[d.room]; if (rr && e.type === "PushEvent") { rr.n += d.n || 1; HQ.setRoomInfo(d.room, "LV " + (1 + Math.floor(Math.sqrt(rr.n))), ROOMS[d.room].sub + " · " + rr.n + " commit · " + ago(e.created_at) + " trước"); }
     if (w && e.type === "PushEvent") {
       const o = ensureActor(w);
-      if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
+      if (o) { o.moved = true; moveTo(w.id, d.room); o.task = d.msg || d.text; if (!w.id.startsWith("s:")) setSleep(w.id, (Date.now() - new Date(e.created_at)) / 864e5 >= 1); if (!firstLoad) { say(w.id, d.msg || d.text); pulse(d.room, "+" + (d.n || 1) + " commit"); } }
     } else if (!firstLoad) pulse(d.room, d.newRoom ? "Phòng mới" : e.type === "WatchEvent" ? "+1 sao" : "Mới");
     seen.add(e.id);
   }
@@ -408,7 +445,8 @@ setInterval(() => {
 }, 1000);
 
 addEventListener("scroll", () => document.getElementById("bar").classList.toggle("scrolled", scrollY > 4), { passive: true });
-loadAgents().then(poll);
+loadAgents().then(loadRepos).then(poll);
+setInterval(loadRepos, 15 * 60000);
 setInterval(loadAgents, 60000);
 })();
 </script>
