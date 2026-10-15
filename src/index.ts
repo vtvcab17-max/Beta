@@ -9,6 +9,7 @@
  */
 
 import { BetaHeartbeat } from "./survival/heartbeat.js";
+import { syncHeartbeatToGitHub } from "./survival/github-sync.js";
 import { GitHubScout } from "./tools/github-scout.js";
 import { PayPalBridge } from "./finance/paypal-bridge.js";
 import { BountyHunter } from "./tools/bounty-hunter.js";
@@ -66,6 +67,7 @@ async function bootBeta() {
     try {
       console.log(`\n[${new Date().toLocaleTimeString("vi-VN")}] >> Thực thi nhịp tim sinh tồn định kỳ...`);
       await heartbeat.tick();
+      syncHeartbeatToGitHub();
     } catch (err: any) {
       console.error(`[Heartbeat Error] Lỗi nhẹ nhịp tim: ${err.message}. Beta tự động phục hồi.`);
     }
