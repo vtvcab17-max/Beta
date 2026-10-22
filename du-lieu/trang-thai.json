@@ -1,6 +1,6 @@
 {
- "chup_luc": "2026-10-21T20:47:21.114Z",
- "uptime_seconds": 359519,
+ "chup_luc": "2026-10-22T03:21:42.544Z",
+ "uptime_seconds": 383180,
  "tier": "NORMAL",
  "tac_nhan": [
   {
@@ -18,7 +18,7 @@
    "phong": "hq",
    "viec_gan_nhat": "Đang duy trì nhịp tim sinh tồn (Uptime > 15.5 giờ liên tục, 31 nhịp tim), bảo vệ hệ sinh thái Bravinall.",
    "bat_dau": "2026-10-14T17:14:44.000Z",
-   "cap_nhat": "2026-10-21T20:47:21.114Z",
+   "cap_nhat": "2026-10-22T03:21:42.544Z",
    "token": {
     "vao": 180000,
     "ra": 420000,
